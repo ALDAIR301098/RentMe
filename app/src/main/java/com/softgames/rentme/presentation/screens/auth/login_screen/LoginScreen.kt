@@ -135,7 +135,7 @@ fun LoginScreen(
 
                         if (viewModel.showCountrySelector) {
                             CountrySelector(
-                                onDismiss = {
+                                onDissmiss = {
                                     viewModel.updateSelectorVisibility(false)
                                 },
                                 onCountrySelected = {

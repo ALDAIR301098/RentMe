@@ -1,120 +1,143 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalPermissionsApi::class)
 
 package com.softgames.rentme.presentation.screens.register
 
+import android.Manifest
+import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.softgames.rentme.R
-import com.softgames.rentme.presentation.components.buttons.MyButton
-import com.softgames.rentme.presentation.components.others.MyIcon
-import com.softgames.rentme.presentation.components.textfields.MyOutlinedTextField
-import com.softgames.rentme.presentation.components.textfields.MyTextField
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
+import com.softgames.rentme.presentation.screens.register.composables.*
 import com.softgames.rentme.presentation.theme.RentMeTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    activity: Activity,
+    viewModel: RegisterViewModel = viewModel(),
+) {
+
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    var cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    var requestOpenCamera by remember { mutableStateOf(false) }
+    var firstCheck by remember { mutableStateOf(true) }
+
     Scaffold(
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Text(
-                        text = "Registrar nuevo usuario ",
-                        modifier = Modifier.padding(end = 16.dp),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
-                },
-                navigationIcon = { MyIcon(Icons.Default.Close) }
+            RegisterAppBar(
+                scrollBehavior = scrollBehavior,
+                onCloseClicked = { }
             )
         },
-
-        ) { paddingValues ->
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) { paddingValues ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            Spacer(Modifier)
+            Spacer(Modifier.height(16.dp))
 
-            Surface(
-                modifier = Modifier.size(192.dp),
-                color = MaterialTheme.colorScheme.tertiary,
-                shape = RoundedCornerShape(28.dp)
-            ) {
-                MyIcon(
-                    imageVector = Icons.Outlined.CameraAlt,
-                    modifier = Modifier.padding(32.dp),
-                    tint = Color.White
-                )
+            PhotoUser {
+                viewModel.showPhotoSelectorDialog()
             }
 
-            var name by remember { mutableStateOf("") }
-            var lastName by remember { mutableStateOf("") }
-            var gender by remember { mutableStateOf("") }
-            var birthDate by remember { mutableStateOf("") }
-            var mail by remember { mutableStateOf("") }
-            var password by remember { mutableStateOf("") }
-            var repeatPassword by remember { mutableStateOf("") }
-
             Spacer(Modifier)
 
-            MyOutlinedTextField(
-                text = name,
-                onTextChange = { name = it },
-                label = { Text("Nombre") },
-                leadingIcon = { MyIcon(Icons.Outlined.AccountCircle) }
+            NameTextField(
+                text = viewModel.name.text,
+                onTextChange = { viewModel.updateName(it) }
             )
 
-            MyOutlinedTextField(
-                text = lastName,
-                onTextChange = { lastName = it },
-                label = { Text("Apellidos") },
-                leadingIcon = { MyIcon(Icons.Outlined.AccountCircle) }
+            LastNameTextField(
+                text = viewModel.lastName.text,
+                onTextChange = { viewModel.updateLastName(it) }
             )
 
-            MyOutlinedTextField(
-                text = gender,
-                onTextChange = { gender = it },
-                label = { Text("Género") },
-                leadingIcon = { MyIcon(R.drawable.ic_yin_yang) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(false) }
+            GenderDropDownMenu { viewModel.updateGender(it) }
+
+
+            BirthDateTextField(
+                text = viewModel.birthDate.text,
+                onTextChange = { viewModel.updateBirthDate(it) },
+                onDatePickerClicked = { viewModel.showDateDialogPicker() }
             )
 
-            MyOutlinedTextField(
-                text = birthDate,
-                onTextChange = { birthDate = it },
-                label = { Text("Fecha de nacimiento") },
-                leadingIcon = { MyIcon(Icons.Outlined.CalendarMonth) },
-                trailingIcon = {
-                    Text(
-                        text = "Elegir", modifier = Modifier.padding(end = 12.dp),
-                        color = MaterialTheme.colorScheme.secondary
-                    )
+            RegisterButton { }
+
+        }
+
+        if (viewModel.isPhotoDialogPickerVisible) {
+            PhotoSelectorDialog(
+                onCameraClicked = {
+                    viewModel.hidePhotoSelectorDialog()
+                    cameraPermissionState.launchPermissionRequest()
+                    requestOpenCamera = true
+                    firstCheck = false
                 },
-                supportingText = { Text("dd/mm/aaaa") }
+                onGalleryClicked = {
+                    viewModel.hidePhotoSelectorDialog()
+                },
+                onFiledClicked = {
+                    viewModel.hidePhotoSelectorDialog()
+                },
+                onDissmiss = {
+                    viewModel.hidePhotoSelectorDialog()
+                },
             )
+        }
 
-            MyButton(onClick = { /*TODO*/ }) {
-                Text("Finalizar registro")
+        if (viewModel.isDateDialogPickerVisible) {
+            DatePickerDialog(
+                onDissMiss = { viewModel.hideDateDialogPicker() },
+                onDateSelected = { viewModel.updateBirthDate(it); viewModel.hideDateDialogPicker() }
+            )
+        }
+
+
+        if (requestOpenCamera) {
+            when {
+
+                cameraPermissionState.status.isGranted -> {
+                    Log.d("ALDAIR", "ABRIENDO CAMARA")
+                    requestOpenCamera = false
+                }
+
+                cameraPermissionState.status.shouldShowRationale -> {
+                    Log.d("ALDAIR", "RELATIONALE")
+                    requestOpenCamera = false
+                    cameraPermissionState.launchPermissionRequest()
+                }
+
+                !cameraPermissionState.status.isGranted && !cameraPermissionState.status.shouldShowRationale -> {
+                    Log.d("ALDAIR", "DENIED PERMANENTLY")
+                    requestOpenCamera = false
+                }
+
             }
-
         }
     }
 }
@@ -123,6 +146,6 @@ fun RegisterScreen() {
 @Composable
 private fun RegisterScreenPreview() {
     RentMeTheme {
-        RegisterScreen()
+        RegisterScreen(Activity())
     }
 }

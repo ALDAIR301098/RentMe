@@ -1,6 +1,5 @@
 package com.softgames.rentme.presentation.screens.auth.login_screen
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,7 +10,7 @@ import com.softgames.rentme.data.source.countries
 import com.softgames.rentme.domain.model.ScreenState
 import com.softgames.rentme.domain.model.ScreenState.*
 import com.softgames.rentme.domain.model.TextFieldValue
-import com.softgames.rentme.presentation.util.unacent
+import com.softgames.rentme.util.unacent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

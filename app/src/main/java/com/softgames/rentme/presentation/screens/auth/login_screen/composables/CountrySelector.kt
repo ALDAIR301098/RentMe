@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,12 +28,13 @@ import com.softgames.rentme.presentation.components.others.MyIcon
 import com.softgames.rentme.presentation.components.others.MyImage
 import com.softgames.rentme.presentation.components.textfields.MyTextField
 import com.softgames.rentme.presentation.screens.auth.login_screen.LoginViewModel
+import com.softgames.rentme.presentation.theme.RentMeTheme
 
 @Composable
 fun CountrySelector(
     viewModel: LoginViewModel = viewModel(),
     onCountrySelected: (Country) -> Unit,
-    onDismiss: () -> Unit,
+    onDissmiss: () -> Unit,
 ) {
 
     var txtSearch by remember { mutableStateOf("") }
@@ -41,7 +43,7 @@ fun CountrySelector(
     //SCREEN ***************************************************************************************
 
     Dialog(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDissmiss
     ) {
         Surface(
             shape = AlertDialogDefaults.shape,
@@ -149,5 +151,15 @@ private fun CountryListItem(
                 .padding(horizontal = 16.dp)
         )
         Text("+${country.code}")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CountrySelectorPreview() {
+    RentMeTheme {
+        CountrySelector(onCountrySelected = {}) {
+
+        }
     }
 }
