@@ -1,9 +1,17 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalPermissionsApi::class
+)
 
 package com.softgames.rentme.presentation.screens.register
 
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,10 +26,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.softgames.rentme.Manifest
 import com.softgames.rentme.presentation.screens.register.composables.*
 import com.softgames.rentme.presentation.theme.RentMeTheme
-import com.softgames.rentme.presentation.util.FileUtil
 
 @Composable
 fun RegisterScreen(
@@ -29,16 +39,41 @@ fun RegisterScreen(
 ) {
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     var hasImage by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
-    //var cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    //var requestOpenCamera by remember { mutableStateOf(false) }
 
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()
-    ) { success ->
-        hasImage = success
+    var requestOpenCamera by remember { mutableStateOf(false) }
+
+    val cameraPermission = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            if (requestOpenCamera) {
+
+            } else {
+                if (requestOpenCamera) {
+
+                }
+            }
+        }
+    }
+
+    val imageFilesPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ) { uri ->
+        Log.d("ALDAIR", "PATH FROM FILE: $uri")
+        hasImage = uri != null
+        imageUri = uri
+    }
+
+    val galleryImagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+    ) {
+        Log.d("ALDAIR", "PATH FROM GALLERY: $it")
+        hasImage = it != null
+        imageUri = it
     }
 
     Scaffold(
@@ -96,18 +131,16 @@ fun RegisterScreen(
             PhotoSelectorDialog(
                 onCameraClicked = {
                     viewModel.hidePhotoSelectorDialog()
-                    val uri = FileUtil.getImageUri(context)
-                    imageUri = uri
-                    cameraLauncher.launch(uri)
-
-                    /*cameraPermissionState.launchPermissionRequest()
-                    requestOpenCamera = true*/
+                    requestOpenCamera = true
+                    cameraPermission.launch(android.Manifest.permission.CAMERA)
                 },
                 onGalleryClicked = {
                     viewModel.hidePhotoSelectorDialog()
+                    galleryImagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
-                onFiledClicked = {
+                onFileClicked = {
                     viewModel.hidePhotoSelectorDialog()
+                    imageFilesPicker.launch("image/*")
                 },
                 onDissmiss = {
                     viewModel.hidePhotoSelectorDialog()
@@ -122,6 +155,22 @@ fun RegisterScreen(
             )
         }
 
+    }
+}
+
+fun checkCameraPermission(context: Context){
+    when{
+
+        ContextCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED -> {
+
+        }
+
+        Activity().shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA) ->{
+
+        }
 
     }
 }

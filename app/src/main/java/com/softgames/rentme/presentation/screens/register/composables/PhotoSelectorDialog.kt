@@ -19,7 +19,7 @@ fun PhotoSelectorDialog(
     onDissmiss: () -> Unit,
     onCameraClicked: () -> Unit,
     onGalleryClicked: () -> Unit,
-    onFiledClicked: () -> Unit,
+    onFileClicked: () -> Unit,
 ) {
 
     Dialog(onDissmiss) {
@@ -42,7 +42,7 @@ fun PhotoSelectorDialog(
                 ) {
                     CameraOption(onCameraClicked)
                     GalleryOption(onGalleryClicked)
-                    FilesOption(onFiledClicked)
+                    FilesOption(onFileClicked)
                     CancelOption(onDissmiss)
                 }
             }
@@ -140,7 +140,7 @@ private fun PhotoSelectorDialogPreview() {
         PhotoSelectorDialog(
             onCameraClicked = {},
             onGalleryClicked = {},
-            onFiledClicked = {},
+            onFileClicked = {},
             onDissmiss = {}
         )
 
