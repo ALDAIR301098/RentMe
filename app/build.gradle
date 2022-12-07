@@ -77,6 +77,9 @@ dependencies {
     //PERMISSIONS
     implementation "com.google.accompanist:accompanist-permissions:0.28.0"
 
+    //COIL
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
     //ANDROID BASE COMPOSE
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'

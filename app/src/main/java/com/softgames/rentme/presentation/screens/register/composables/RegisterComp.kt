@@ -3,7 +3,9 @@
 
 package com.softgames.rentme.presentation.screens.register.composables
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.softgames.rentme.R
 import com.softgames.rentme.presentation.components.buttons.MyButton
 import com.softgames.rentme.presentation.components.others.MyIcon
@@ -59,6 +62,8 @@ fun RegisterAppBar(
 
 @Composable
 fun PhotoUser(
+    hasImage: Boolean,
+    imageUri: Uri?,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -68,11 +73,19 @@ fun PhotoUser(
         color = MaterialTheme.colorScheme.tertiary,
         shape = RoundedCornerShape(28.dp)
     ) {
-        MyIcon(
-            imageVector = Icons.Outlined.CameraAlt,
-            modifier = Modifier.padding(32.dp),
-            tint = Color.White
-        )
+        if (hasImage && imageUri != null) {
+            AsyncImage(
+                model = imageUri,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            MyIcon(
+                imageVector = Icons.Outlined.CameraAlt,
+                modifier = Modifier.padding(32.dp),
+                tint = Color.White
+            )
+        }
     }
 }
 

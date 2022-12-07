@@ -15,9 +15,7 @@ import com.softgames.rentme.presentation.screens.menu.HomeScreen
 import com.softgames.rentme.presentation.screens.register.RegisterScreen
 
 @Composable
-fun NavigationHost(
-    activity: Activity
-) {
+fun NavigationHost() {
 
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
@@ -52,7 +50,7 @@ fun NavigationHost(
         }
 
         composable(RegisterScreen.route) {
-            RegisterScreen(activity)
+            RegisterScreen()
         }
 
         composable(HomeScreen.route) {

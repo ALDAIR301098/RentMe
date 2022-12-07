@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="RentMe"
+        path="Android/data/com.softgames.rentme/files/Pictures">
+    </external-path>
+</paths>

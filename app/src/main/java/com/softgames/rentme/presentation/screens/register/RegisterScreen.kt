@@ -1,11 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalPermissionsApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
 package com.softgames.rentme.presentation.screens.register
 
-import android.Manifest
-import android.app.Activity
-import android.util.Log
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,28 +15,31 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.softgames.rentme.presentation.screens.register.composables.*
 import com.softgames.rentme.presentation.theme.RentMeTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.softgames.rentme.presentation.util.FileUtil
 
 @Composable
 fun RegisterScreen(
-    activity: Activity,
     viewModel: RegisterViewModel = viewModel(),
 ) {
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    var cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    var requestOpenCamera by remember { mutableStateOf(false) }
-    var firstCheck by remember { mutableStateOf(true) }
+    var hasImage by remember { mutableStateOf(false) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+    //var cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    //var requestOpenCamera by remember { mutableStateOf(false) }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        hasImage = success
+    }
 
     Scaffold(
         topBar = {
@@ -61,7 +63,7 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            PhotoUser {
+            PhotoUser(hasImage, imageUri) {
                 viewModel.showPhotoSelectorDialog()
             }
 
@@ -94,9 +96,12 @@ fun RegisterScreen(
             PhotoSelectorDialog(
                 onCameraClicked = {
                     viewModel.hidePhotoSelectorDialog()
-                    cameraPermissionState.launchPermissionRequest()
-                    requestOpenCamera = true
-                    firstCheck = false
+                    val uri = FileUtil.getImageUri(context)
+                    imageUri = uri
+                    cameraLauncher.launch(uri)
+
+                    /*cameraPermissionState.launchPermissionRequest()
+                    requestOpenCamera = true*/
                 },
                 onGalleryClicked = {
                     viewModel.hidePhotoSelectorDialog()
@@ -118,34 +123,14 @@ fun RegisterScreen(
         }
 
 
-        if (requestOpenCamera) {
-            when {
-
-                cameraPermissionState.status.isGranted -> {
-                    Log.d("ALDAIR", "ABRIENDO CAMARA")
-                    requestOpenCamera = false
-                }
-
-                cameraPermissionState.status.shouldShowRationale -> {
-                    Log.d("ALDAIR", "RELATIONALE")
-                    requestOpenCamera = false
-                    cameraPermissionState.launchPermissionRequest()
-                }
-
-                !cameraPermissionState.status.isGranted && !cameraPermissionState.status.shouldShowRationale -> {
-                    Log.d("ALDAIR", "DENIED PERMANENTLY")
-                    requestOpenCamera = false
-                }
-
-            }
-        }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 private fun RegisterScreenPreview() {
     RentMeTheme {
-        RegisterScreen(Activity())
+        RegisterScreen()
     }
 }
