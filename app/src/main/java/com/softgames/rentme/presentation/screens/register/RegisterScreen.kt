@@ -30,7 +30,8 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.softgames.rentme.presentation.screens.register.composables.*
 import com.softgames.rentme.presentation.theme.RentMeTheme
-import com.softgames.rentme.presentation.util.CropImage
+import com.softgames.rentme.presentation.util.CropImage1x1
+import com.softgames.rentme.util.createUriFromFile
 
 @Composable
 fun RegisterScreen(
@@ -48,7 +49,7 @@ fun RegisterScreen(
     var isDateDialogPickerVisible by remember { mutableStateOf(false) }
 
     val cropImage = rememberLauncherForActivityResult(
-        contract = CropImage()
+        contract = CropImage1x1()
     ) {
         hasImage = it != null
         imageUri = it
@@ -66,7 +67,7 @@ fun RegisterScreen(
         contract = ActivityResultContracts.PickVisualMedia(),
     ) {
         if (it != null) {
-            val endUri = viewModel.createUriFromFile(context)
+            val endUri = createUriFromFile(context)
             cropImage.launch(Pair(it, endUri))
         }
     }
@@ -75,7 +76,7 @@ fun RegisterScreen(
         contract = ActivityResultContracts.GetContent(),
     ) {
         if (it != null) {
-            val endUri = viewModel.createUriFromFile(context)
+            val endUri = createUriFromFile(context)
             cropImage.launch(Pair(it, endUri))
         }
     }
@@ -84,7 +85,7 @@ fun RegisterScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            hasImage = false; imageUri = viewModel.createUriFromFile(context); takePhoto.launch(
+            hasImage = false; imageUri = createUriFromFile(context); takePhoto.launch(
                 imageUri
             )
         } else {

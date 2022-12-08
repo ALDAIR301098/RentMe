@@ -11,6 +11,8 @@ import com.softgames.rentme.presentation.screens.auth.AuthViewModel
 import com.softgames.rentme.presentation.screens.auth.login_screen.LoginScreen
 import com.softgames.rentme.presentation.screens.auth.phone_auth_screen.PhoneAuthScreen
 import com.softgames.rentme.presentation.screens.home.guest_home.GuestHomeScreen
+import com.softgames.rentme.presentation.screens.home.host_home.HostHomeScreen
+import com.softgames.rentme.presentation.screens.home.register_house.RegisterHouseScreen
 import com.softgames.rentme.presentation.screens.register.RegisterScreen
 
 @Composable
@@ -22,7 +24,7 @@ fun NavigationHost(
     val authViewModel: AuthViewModel = viewModel()
 
     NavHost(
-        navController = navController, startDestination = GuestHomeScreen.route
+        navController = navController, startDestination = RegisterHouseScreen.route
     ) {
 
         composable(LoginScreen.route) {
@@ -56,6 +58,17 @@ fun NavigationHost(
 
         composable(GuestHomeScreen.route) {
             GuestHomeScreen()
+        }
+
+        composable(HostHomeScreen.route) {
+            HostHomeScreen()
+        }
+
+        composable(RegisterHouseScreen.route) {
+            RegisterHouseScreen(
+                activity = activity,
+                onCloseClicked = { navController.popBackStack() }
+            )
         }
 
     }

@@ -1,21 +1,13 @@
 package com.softgames.rentme.presentation.screens.register
 
-import android.content.Context
-import android.net.Uri
-import android.os.Environment
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.softgames.rentme.domain.model.RentMeUser
-import com.softgames.rentme.domain.model.RentMeUser.*
+import com.softgames.rentme.domain.model.RentMeUser.Guest
 import com.softgames.rentme.domain.model.ScreenState
 import com.softgames.rentme.domain.model.TextFieldValue
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.io.File
 
 class RegisterViewModel : ViewModel() {
 
@@ -84,12 +76,6 @@ class RegisterViewModel : ViewModel() {
         if (birthDate.text.length != 8) {
             birthDate = birthDate.copy(error = "Fecha incorrecta"); return false
         } else birthDate = birthDate.copy(error = null); return true
-    }
-
-    fun createUriFromFile(context: Context): Uri {
-        val photoFile = File.createTempFile(
-            "IMG_", ".jpg", context.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
-        return FileProvider.getUriForFile(context, "${context.packageName}.provider", photoFile)
     }
 
 }

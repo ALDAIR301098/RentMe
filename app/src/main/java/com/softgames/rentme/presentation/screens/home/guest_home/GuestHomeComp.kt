@@ -30,18 +30,20 @@ import com.softgames.rentme.presentation.components.textfields.MySearch
 import com.softgames.rentme.presentation.theme.RentMeTheme
 
 @Composable
-fun GuestHomeAppBar(
+fun HomeAppBar(
     txtSearch: String,
-    onQueryChange: (String) -> Unit
+    onQueryChange: (String) -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
+
 
                 MySearch(
                     text = txtSearch,
@@ -51,10 +53,10 @@ fun GuestHomeAppBar(
                 )
             }
         },
-        modifier = Modifier.height(100.dp),
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        scrollBehavior = scrollBehavior
     )
 }
 
@@ -95,7 +97,7 @@ fun HouseItem(
 
         Column(
             modifier = Modifier.padding(horizontal = 8.dp)
-        ){
+        ) {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -109,8 +111,10 @@ fun HouseItem(
                     maxLines = 2
                 )
                 Spacer(modifier = Modifier.width(16.dp))
-                Row {
-                    MyIcon(Icons.Filled.Star)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    MyIcon(imageVector = Icons.Filled.Star, modifier = Modifier.size(20.dp))
                     Text(house.rating.toString())
                     Text("(${house.timesRated})")
                 }
@@ -125,14 +129,14 @@ fun HouseItem(
                             fontSize = 16.sp
                         )
                     ) {
-                        append("${house.price} MXN ")
+                        append("${house.price} MXN / ")
                     }
                     withStyle(
                         style = SpanStyle(
                             fontWeight = FontWeight.W400,
                             fontSize = 16.sp
                         )
-                    ){
+                    ) {
                         append("mes")
                     }
                 }

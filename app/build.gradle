@@ -83,6 +83,13 @@ dependencies {
     //UCROP
     implementation 'com.github.yalantis:ucrop:2.2.7'
 
+    //COMPOSABLE PLACEHOLDERS
+    implementation "com.google.accompanist:accompanist-placeholder-material:<version>"
+
+    //PAGER
+    implementation "com.google.accompanist:accompanist-placeholder-material:0.28.0"
+    implementation "com.google.accompanist:accompanist-pager:0.28.0"
+
     //ANDROID BASE COMPOSE
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'

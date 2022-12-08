@@ -8,7 +8,7 @@ import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 import com.yalantis.ucrop.UCrop
 
-class CropImage : ActivityResultContract<Pair<Uri, Uri>, Uri?>() {
+class CropImage3x2 : ActivityResultContract<Pair<Uri, Uri>, Uri?>() {
 
     override fun createIntent(context: Context, input: Pair<Uri, Uri>): Intent =
         UCrop.of(input.first, input.second)
@@ -17,7 +17,7 @@ class CropImage : ActivityResultContract<Pair<Uri, Uri>, Uri?>() {
 
     private fun opcionesRecorte(): UCrop.Options {
         val crop_options = UCrop.Options()
-        crop_options.withAspectRatio(1f, 1f)
+        crop_options.withAspectRatio(3f, 2f)
         crop_options.withMaxResultSize(1000, 1000)
         crop_options.setCompressionQuality(70)
         crop_options.setHideBottomControls(false)

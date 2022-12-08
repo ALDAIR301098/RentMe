@@ -12,7 +12,7 @@ data class House(
     var guestNumber: Int = 0,
     var rooms: Int = 0,
     var beds: Int = 0,
-    var bethroom: Int = 0,
+    var bathrooms: Int = 0,
     var photoList: List<Uri> = emptyList(),
     var rating: Float = 0.0f,
     var timesRated: Int = 0
