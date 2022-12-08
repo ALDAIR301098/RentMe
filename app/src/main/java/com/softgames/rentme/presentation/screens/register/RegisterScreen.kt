@@ -7,7 +7,6 @@ package com.softgames.rentme.presentation.screens.register
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -28,12 +27,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.softgames.rentme.presentation.screens.register.composables.*
 import com.softgames.rentme.presentation.theme.RentMeTheme
 import com.softgames.rentme.presentation.util.CropImage
-import java.io.File
 
 @Composable
 fun RegisterScreen(
@@ -88,10 +85,12 @@ fun RegisterScreen(
     ) { isGranted ->
         if (isGranted) {
             hasImage = false; imageUri = viewModel.createUriFromFile(context); takePhoto.launch(
-                imageUri)
+                imageUri
+            )
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    activity, android.Manifest.permission.CAMERA)
+                    activity, android.Manifest.permission.CAMERA
+                )
             ) {
                 //SHOW MESSAGE RELATIONALE FOR WHY REQUEST CAMERA PERMISSION
             } else {
@@ -152,7 +151,9 @@ fun RegisterScreen(
             BirthDateTextField(
                 text = viewModel.birthDate.text,
                 error = viewModel.birthDate.error,
-                onTextChange = { viewModel.updateBirthDate(it) },
+                onTextChange = {
+                    viewModel.updateBirthDate(it)
+                },
                 onDatePickerClicked = { isDateDialogPickerVisible = true }
             )
 
@@ -162,6 +163,7 @@ fun RegisterScreen(
             )
 
             RegisterButton {
+                Log.d("ALDAIR", viewModel.birthDate.text.length.toString())
                 viewModel.tryContinueLogin()
             }
 

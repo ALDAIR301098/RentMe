@@ -12,8 +12,3 @@ fun CharSequence.isPersonNamesOnly(): Boolean{
     val regex = "^[A-Za-z ÁÉÍÓÚáéíóú]*$".toRegex()
     return regex.matches(this)
 }
-
-fun CharSequence.isDateOnly(): Boolean{
-    val regex = "^[0-9/]*$".toRegex()
-    return regex.matches(this)
-}

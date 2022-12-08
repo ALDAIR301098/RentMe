@@ -10,7 +10,7 @@ import com.softgames.rentme.presentation.navigation.Destinations.*
 import com.softgames.rentme.presentation.screens.auth.AuthViewModel
 import com.softgames.rentme.presentation.screens.auth.login_screen.LoginScreen
 import com.softgames.rentme.presentation.screens.auth.phone_auth_screen.PhoneAuthScreen
-import com.softgames.rentme.presentation.screens.home.GuestHomeScreen
+import com.softgames.rentme.presentation.screens.home.guest_home.GuestHomeScreen
 import com.softgames.rentme.presentation.screens.register.RegisterScreen
 
 @Composable

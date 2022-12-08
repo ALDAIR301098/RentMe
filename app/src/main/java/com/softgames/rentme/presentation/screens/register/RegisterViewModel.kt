@@ -81,7 +81,7 @@ class RegisterViewModel : ViewModel() {
         if (birthDate.text.isEmpty()) {
             birthDate = birthDate.copy(error = "Ingrese su fecha de nacimiento"); return false
         } else birthDate = birthDate.copy(error = null);
-        if (birthDate.text.length != 10) {
+        if (birthDate.text.length != 8) {
             birthDate = birthDate.copy(error = "Fecha incorrecta"); return false
         } else birthDate = birthDate.copy(error = null); return true
     }
