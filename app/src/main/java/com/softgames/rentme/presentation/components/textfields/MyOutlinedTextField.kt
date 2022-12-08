@@ -55,7 +55,10 @@ fun MyOutlinedTextField(
     ),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = TextFieldDefaults.outlinedShape,
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+        focusedBorderColor = MaterialTheme.colorScheme.secondary,
+        focusedLabelColor = MaterialTheme.colorScheme.secondary
+    ),
 ) {
     OutlinedTextField(
         value = text,

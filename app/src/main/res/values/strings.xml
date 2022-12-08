@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RentMe</string>
+    <string name="camera_permission_denied">El permiso de la camara ah sido denegado permanentemente, si desea utilizar esta funcion, debe conceder el permiso manualmente en la siguiente pantalla de Ajustes de la App > Permisos > Camara > Permitir.</string>
 </resources>

@@ -1,27 +1,28 @@
 package com.softgames.rentme.presentation.navigation
 
-import android.app.Activity
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.softgames.rentme.presentation.MainActivity
 import com.softgames.rentme.presentation.navigation.Destinations.*
 import com.softgames.rentme.presentation.screens.auth.AuthViewModel
 import com.softgames.rentme.presentation.screens.auth.login_screen.LoginScreen
 import com.softgames.rentme.presentation.screens.auth.phone_auth_screen.PhoneAuthScreen
-import com.softgames.rentme.presentation.screens.menu.HomeScreen
+import com.softgames.rentme.presentation.screens.home.GuestHomeScreen
 import com.softgames.rentme.presentation.screens.register.RegisterScreen
 
 @Composable
-fun NavigationHost() {
+fun NavigationHost(
+    activity: ComponentActivity,
+) {
 
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
 
     NavHost(
-        navController = navController, startDestination = RegisterScreen.route
+        navController = navController, startDestination = GuestHomeScreen.route
     ) {
 
         composable(LoginScreen.route) {
@@ -32,7 +33,7 @@ fun NavigationHost() {
                     navController.navigate(PhoneAuthScreen.route)
                 },
                 showHomeScreen = {
-                    navController.navigate(HomeScreen.route) {
+                    navController.navigate(GuestHomeScreen.route) {
                         popUpTo(LoginScreen.route) {
                             inclusive = true
                         }
@@ -50,11 +51,11 @@ fun NavigationHost() {
         }
 
         composable(RegisterScreen.route) {
-            RegisterScreen()
+            RegisterScreen(activity)
         }
 
-        composable(HomeScreen.route) {
-            HomeScreen()
+        composable(GuestHomeScreen.route) {
+            GuestHomeScreen()
         }
 
     }

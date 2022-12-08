@@ -76,11 +76,11 @@ val typography = Typography(
     ),
 
     titleLarge = TextStyle(
-        fontFamily = samsungSharp,
+        fontFamily = poppins,
         lineHeight = 28.sp,
         fontSize = 22.sp,
         letterSpacing = 0.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.W400,
     ),
 
     titleMedium = TextStyle(

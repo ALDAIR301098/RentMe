@@ -80,6 +80,9 @@ dependencies {
     //COIL
     implementation("io.coil-kt:coil-compose:2.2.2")
 
+    //UCROP
+    implementation 'com.github.yalantis:ucrop:2.2.7'
+
     //ANDROID BASE COMPOSE
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
