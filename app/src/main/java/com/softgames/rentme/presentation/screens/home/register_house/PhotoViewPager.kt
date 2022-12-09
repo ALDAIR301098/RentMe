@@ -73,6 +73,7 @@ fun PhotoViewPager(
                     )
                 }
             } else {
+
                 MyImage(
                     imageVector = Icons.Outlined.CameraAlt,
                     modifier = Modifier
@@ -87,6 +88,7 @@ fun PhotoViewPager(
                         .align(Alignment.BottomCenter)
                         .padding(48.dp)
                 )
+
             }
         }
     }

@@ -76,18 +76,22 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun RentMeTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
 
     val colors = if (!useDarkTheme) LightColors else DarkColors
     val systemUiController = rememberSystemUiController()
 
     DisposableEffect(systemUiController, useDarkTheme) {
-        systemUiController.setSystemBarsColor(
+        systemUiController.setStatusBarColor(
             color = Color.Transparent,
             darkIcons = !useDarkTheme
         )
-        onDispose { }
+        systemUiController.setNavigationBarColor(
+            color = Color.Black
+        )
+        onDispose {
+        }
     }
 
     MaterialTheme(

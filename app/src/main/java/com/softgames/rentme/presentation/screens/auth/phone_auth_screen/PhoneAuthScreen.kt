@@ -2,33 +2,71 @@
 
 package com.softgames.rentme.presentation.screens.auth.phone_auth_screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ComponentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.softgames.rentme.domain.model.ScreenState
-import com.softgames.rentme.presentation.screens.auth.AuthViewModel
+import com.softgames.rentme.domain.model.ScreenState.*
 import com.softgames.rentme.presentation.screens.auth.phone_auth_screen.composables.*
 import com.softgames.rentme.presentation.theme.RentMeTheme
+import com.softgames.rentme.presentation.util.showMessage
 
 @Composable
 fun PhoneAuthScreen(
-    authViewModel: AuthViewModel = viewModel(),
+    activity: ComponentActivity,
+    phone: String,
+    countryCode: String,
     viewModel: PhoneAuthViewModel = viewModel(),
-    showRegisterScreen: () -> Unit,
+    navigateRegisterScreen: (String) -> Unit,
+    navigateHomeGuestScreen: () -> Unit,
+    navigateHomeHostScreen: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+
+        viewModel.updateCountryCode(countryCode)
+        viewModel.updatePhone(phone)
+
+        if (!viewModel.codeWasSend) {
+            viewModel.sendVerificationCode(
+                activity = activity,
+                onCodeSent = {
+                    showMessage(context, "Se envío el código de verificación.")
+                },
+                onSignInSuccessful = {
+                    showMessage(
+                        context = context,
+                        message = "Se inicio sesión exitosamente."
+                    )
+                }
+            )
+        }
+    }
+
     when (viewModel.screenState) {
 
-        is ScreenState.LOADING -> {
+        is FINISHED -> {
             LaunchedEffect(Unit) {
-                viewModel.updateScreenState(ScreenState.WAITING)
-                showRegisterScreen()
+                if (viewModel.checkIfUserExist()) {
+                    viewModel.updateScreenState(WAITING)
+                    navigateHomeGuestScreen()
+                } else {
+                    viewModel.updateScreenState(WAITING)
+                    navigateRegisterScreen(viewModel.userId!!)
+                }
             }
         }
 
@@ -40,63 +78,86 @@ fun PhoneAuthScreen(
             ) { paddingValues ->
 
                 Column(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    Modifier.padding(paddingValues)
                 ) {
-
-                    SmsCodeImage()
-
-                    PhoneMessageCard(
-                        phoneNumber = "+${authViewModel.phoneAuthData.countryCode} " +
-                                authViewModel.phoneAuthData.phoneNumber,
-                        changePhoneNumber = onBackPressed
-                    )
-
-                    Spacer(Modifier)
-
-
-                    Column {
-
-                        OtpCodeBoxes(
-                            code = viewModel.code.text,
-                            onCodeChange = { viewModel.updateCode(it) }
-                        )
-
-                        viewModel.code.error?.let {
-                            Spacer(Modifier.height(6.dp)); ErrorText(it)
-                        }
+                    if (viewModel.screenState is LOADING) {
+                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                        Spacer(Modifier.height(16.dp))
                     }
 
-                    Spacer(Modifier)
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
 
-                    VerifyPhoneButton(
-                        onClick = {
-                            viewModel.tryContunueAuth()
+                        SmsCodeImage()
+
+                        PhoneMessageCard(
+                            phoneNumber = "+${viewModel.countryCode} " + viewModel.phone,
+                            onChangeClicked = onBackPressed
+                        )
+
+                        Spacer(Modifier)
+
+                        Column {
+
+                            OtpCodeBoxes(
+                                code = viewModel.txfSmsCode.text,
+                                onCodeChange = { viewModel.updateSmsCode(it) }
+                            )
+
+                            viewModel.txfSmsCode.error?.let {
+                                Spacer(Modifier.height(6.dp)); ErrorText(it)
+                            }
+
                         }
-                    )
 
-                    ResendCodeButton(
-                        onClick = { authViewModel.sendVerificationCode() },
-                        enabled = (viewModel.resendTime == 0),
-                        resendTime = viewModel.resendTime
-                    )
+                        Spacer(Modifier)
+
+                        VerifyPhoneButton(
+                            enabled = viewModel.codeWasSend,
+                            onClick = {
+                                viewModel.signInRentMe(
+                                    onSuccess = {
+                                        showMessage(
+                                            context = context,
+                                            message = "Se inicio sesión exitosamente."
+                                        )
+                                    }
+                                )
+                            }
+                        )
+
+                        ResendCodeButton(
+                            onClick = { },
+                            enabled = (viewModel.resendTime == 0),
+                            resendTime = viewModel.resendTime
+                        )
+
+                    }
 
                 }
 
             }
 
         }
-
     }
 }
 
+@SuppressLint("RestrictedApi")
 @Preview(showBackground = true)
 @Composable
 private fun PhoneAuthScreenPreview() {
     RentMeTheme {
-        PhoneAuthScreen(showRegisterScreen = {}) { }
+        PhoneAuthScreen(
+            activity = ComponentActivity(),
+            countryCode = "52",
+            phone = "3221827267",
+            navigateRegisterScreen = {},
+            navigateHomeGuestScreen = {},
+            navigateHomeHostScreen = {},
+            onBackPressed = {}
+        )
     }
 }

@@ -15,141 +15,124 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.softgames.rentme.domain.model.LoginState.*
-import com.softgames.rentme.domain.model.LoginState.LOADING
 import com.softgames.rentme.domain.model.ScreenState
-import com.softgames.rentme.domain.model.ScreenState.*
-import com.softgames.rentme.presentation.screens.auth.AuthViewModel
-import com.softgames.rentme.presentation.screens.auth.PhoneAuthData
+import com.softgames.rentme.domain.model.ScreenState.FINISHED
+import com.softgames.rentme.domain.model.ScreenState.WAITING
 import com.softgames.rentme.presentation.screens.auth.login_screen.composables.*
 import com.softgames.rentme.presentation.theme.RentMeTheme
 
 @Composable
 fun LoginScreen(
     onCloseScreen: () -> Unit,
-    showPhoneAuthScreen: () -> Unit,
-    showHomeScreen: () -> Unit,
-    authViewModel: AuthViewModel = viewModel(),
+    navigatePhoneAuthScreen: (countryCode: String, phone: String) -> Unit,
+    navigateGuestHomeScreen: () -> Unit,
+    navigateHostHomeScreen: () -> Unit,
     viewModel: LoginViewModel = viewModel(),
 ) {
 
-    when (authViewModel.loginState) {
+    when (viewModel.screenState) {
 
-        is LOGGED -> {
-            LaunchedEffect(Unit) { showHomeScreen() }
+        is FINISHED -> {
+            LaunchedEffect(Unit) {
+                viewModel.updateScreenState(WAITING)
+            }
         }
 
-        is NOT_LOGGED, LOADING -> {
+        else -> {
 
-            when (viewModel.screenState) {
+            val keyboardController = LocalSoftwareKeyboardController.current
 
-                is FINISHED -> {
-                    LaunchedEffect(Unit) {
-                        authViewModel.updatePhoneAuthData(PhoneAuthData(
-                            countryCode = viewModel.code.text,
-                            phoneNumber = viewModel.phone.text
-                        ))
-                        viewModel.updateScreenState(WAITING)
-                        showPhoneAuthScreen()
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                topBar = { LoginAppBar(onCloseScreen) }
+            ) { paddingValues ->
+
+                Column(
+                    Modifier.padding(paddingValues)
+                ) {
+
+                    if (viewModel.screenState == ScreenState.LOADING) {
+                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                        Spacer(Modifier.height(16.dp))
                     }
-                }
-                else -> {
 
-                    val keyboardController = LocalSoftwareKeyboardController.current
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                    Scaffold(
-                        modifier = Modifier.fillMaxSize(),
-                        topBar = { LoginAppBar(onCloseScreen) }
-                    ) { paddingValues ->
+                        WelcomeImage()
 
-                        Column(
-                            Modifier.padding(paddingValues)
-                        ) {
+                        Column {
 
-                            if (
-                                authViewModel.loginState == LOADING ||
-                                viewModel.screenState == ScreenState.LOADING
-                            ) {
-                                LinearProgressIndicator(Modifier.fillMaxWidth())
-                                Spacer(Modifier.height(16.dp))
-                            }
-
-                            Column(
-                                modifier = Modifier.padding(horizontal = 20.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-
-                                WelcomeImage()
-
-                                Column {
-
-                                    CountryDropDownMenu(
-                                        country = viewModel.currentCountry,
-                                        error = viewModel.country.error,
-                                        showCountrySelector = viewModel.showCountrySelector,
-                                        onCountrySelectorVisibilityChange = {
-                                            viewModel.updateSelectorVisibility(it)
-                                        }
-                                    )
-
-                                    Spacer(Modifier.height(4.dp))
-
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    ) {
-
-                                        CodeTextField(
-                                            text = viewModel.code.text,
-                                            error = viewModel.code.error
-                                        ) {
-                                            viewModel.updateCode(it)
-                                        }
-
-                                        PhoneTextField(
-                                            text = viewModel.phone.text,
-                                            error = viewModel.phone.error
-                                        ) {
-                                            viewModel.updatePhone(it)
-                                        }
-
-                                    }
-                                    PhoneSupportingText()
-                                }
-
-                                LoginButton(viewModel.enableLoginButton) {
-                                    keyboardController?.hide()
-                                    viewModel.tryContinueAuth()
-                                }
-                                LoginDivider()
-                                MailButton { }
-
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    GoogleButton(Modifier.weight(1f)) { }
-                                    FacebookButton(Modifier.weight(1f)) { }
-                                }
-                            }
-                        }
-
-                        if (viewModel.showCountrySelector) {
-                            CountrySelector(
-                                onDissmiss = {
-                                    viewModel.updateSelectorVisibility(false)
-                                },
-                                onCountrySelected = {
-                                    viewModel.updateCountry(it)
-                                    viewModel.updateSelectorVisibility(false)
+                            CountryDropDownMenu(
+                                country = viewModel.country,
+                                error = viewModel.txfCountry.error,
+                                showCountrySelector = viewModel.showCountrySelector,
+                                onCountrySelectorVisibilityChange = {
+                                    viewModel.updateSelectorVisibility(it)
                                 }
                             )
+
+                            Spacer(Modifier.height(4.dp))
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+
+                                CodeTextField(
+                                    text = viewModel.txfCountryCode.text,
+                                    error = viewModel.txfCountryCode.error
+                                ) {
+                                    viewModel.updateCountryCode(it)
+                                }
+
+                                PhoneTextField(
+                                    text = viewModel.txfPhone.text,
+                                    error = viewModel.txfPhone.error
+                                ) {
+                                    viewModel.updatePhone(it)
+                                }
+
+                            }
+                            PhoneSupportingText()
                         }
 
+                        LoginButton(viewModel.enableLoginButton) {
+                            keyboardController?.hide()
+                            if (viewModel.validateTextFields()) {
+                                navigatePhoneAuthScreen(
+                                    viewModel.txfCountryCode.text,
+                                    viewModel.txfPhone.text
+                                )
+                            }
+                        }
+                        LoginDivider()
+                        MailButton { }
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            GoogleButton(Modifier.weight(1f)) { }
+                            FacebookButton(Modifier.weight(1f)) { }
+                        }
                     }
+                }
+
+                if (viewModel.showCountrySelector) {
+                    CountrySelector(
+                        onDissmiss = {
+                            viewModel.updateSelectorVisibility(false)
+                        },
+                        onCountrySelected = {
+                            viewModel.updateCountry(it)
+                            viewModel.updateSelectorVisibility(false)
+                        }
+                    )
                 }
 
             }
-
         }
 
     }
@@ -161,5 +144,10 @@ fun LoginScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun LoginScreenPreview() {
-    RentMeTheme { LoginScreen({}, {}, {}) }
+    RentMeTheme {
+        LoginScreen(onCloseScreen = { /*TODO*/ },
+            navigatePhoneAuthScreen = { code, phone -> },
+            navigateGuestHomeScreen = { /*TODO*/ },
+            navigateHostHomeScreen = { /*TODO*/ })
+    }
 }

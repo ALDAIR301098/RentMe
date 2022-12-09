@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "582865211593",
+    "project_id": "rentme-mx",
+    "storage_bucket": "rentme-mx.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582865211593:android:4e6d11dde94d329d5dfd18",
+        "android_client_info": {
+          "package_name": "com.softgames.rentme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582865211593-nif77i2cjde8siasa32uqnucm4nqb1ov.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.softgames.rentme",
+            "certificate_hash": "ccb56431b1635ce79e3d0f020c040c640b1b25f8"
+          }
+        },
+        {
+          "client_id": "582865211593-bte3vaf0c7ioir6pdfkc0cg9uspvjl19.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLF2JPWfiPbXmf7VSJ2zayMINL4fmVRvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582865211593-bte3vaf0c7ioir6pdfkc0cg9uspvjl19.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

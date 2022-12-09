@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -96,10 +97,13 @@ private fun SearchTextField(
         text = txtSearch,
         onTextChange = onTextChange,
         modifier = Modifier.padding(horizontal = 20.dp),
+        shape = RoundedCornerShape(100),
         leadingIcon = { MyIcon(imageVector = Icons.Default.Public) },
         placeholder = { Text("Buscar") },
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.White
+            containerColor = Color.White,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent
         ),
         keyboardOptions = KeyboardOptions.Default.copy(
             capitalization = KeyboardCapitalization.Words,

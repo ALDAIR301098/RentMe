@@ -18,16 +18,16 @@ class LoginViewModel : ViewModel() {
 
     /* *********************************** MUTABLE STATES *************************************** */
 
-    var currentCountry: Country? by mutableStateOf(null)
+    var country: Country? by mutableStateOf(null)
         private set
 
-    var country by mutableStateOf(TextFieldValue())
+    var txfCountry by mutableStateOf(TextFieldValue())
         private set
 
-    var code by mutableStateOf(TextFieldValue())
+    var txfCountryCode by mutableStateOf(TextFieldValue())
         private set
 
-    var phone by mutableStateOf(TextFieldValue())
+    var txfPhone by mutableStateOf(TextFieldValue())
         private set
 
     var screenState: ScreenState by mutableStateOf(USING)
@@ -46,19 +46,19 @@ class LoginViewModel : ViewModel() {
     }
 
     fun updateCountry(_country: Country) {
-        currentCountry = _country
-        country.text = _country.name
-        code.text = _country.code
+        country = _country
+        txfCountry.text = _country.name
+        txfCountryCode.text = _country.code
     }
 
-    fun updateCode(_code: String) {
-        currentCountry = searchCountry(_code)
-        code = code.copy(text = _code)
-        country = country.copy(text = currentCountry?.name ?: "")
+    fun updateCountryCode(_code: String) {
+        country = searchCountry(_code)
+        txfCountryCode = txfCountryCode.copy(text = _code)
+        txfCountry = txfCountry.copy(text = country?.name ?: "")
     }
 
     fun updatePhone(_phone: String) {
-        phone = phone.copy(text = _phone)
+        txfPhone = txfPhone.copy(text = _phone)
         enableLoginButton = (_phone.length == 10)
     }
 
@@ -77,36 +77,25 @@ class LoginViewModel : ViewModel() {
 
     private fun searchCountry(code: String) = try {
         countries.filter { it.code == code }[0]
-    } catch (e: Exception) {
-        null
-    }
+    } catch (e: Exception) { null }
 
-    fun tryContinueAuth() {
-        if (validateTextFields()) {
-            viewModelScope.launch {
-                screenState = LOADING; delay(500)
-                screenState = FINISHED
-            }
-        }
-    }
+    fun validateTextFields(): Boolean {
 
-    private fun validateTextFields(): Boolean {
+        if (txfCountry.text.isEmpty()) {
+            txfCountry = txfCountry.copy(error = "Seleccione un país."); return false
+        } else txfCountry = txfCountry.copy(error = null)
 
-        if (country.text.isEmpty()) {
-            country = country.copy(error = "Seleccione un país."); return false
-        } else country = country.copy(error = null)
+        if (txfCountryCode.text.isEmpty()) {
+            txfCountryCode = txfCountryCode.copy(error = "Vacío."); return false
+        } else txfCountryCode = txfCountryCode.copy(error = null)
 
-        if (code.text.isEmpty()) {
-            code = code.copy(error = "Vacío."); return false
-        } else code = code.copy(error = null)
+        if (txfPhone.text.isEmpty()) {
+            txfPhone = txfPhone.copy(error = "Ingrese el telefóno."); return false
+        } else txfPhone = txfPhone.copy(error = null);
 
-        if (phone.text.isEmpty()) {
-            phone = phone.copy(error = "Ingrese el telefóno."); return false
-        } else phone = phone.copy(error = null);
-
-        if (phone.text.length != 10) {
-            phone = phone.copy(error = "Ingrese 10 dígitos."); return false
-        } else phone = phone.copy(error = null); return true
+        if (txfPhone.text.length != 10) {
+            txfPhone = txfPhone.copy(error = "Ingrese 10 dígitos."); return false
+        } else txfPhone = txfPhone.copy(error = null); return true
 
     }
 

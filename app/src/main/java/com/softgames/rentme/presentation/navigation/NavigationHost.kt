@@ -2,16 +2,15 @@ package com.softgames.rentme.presentation.navigation
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.softgames.rentme.presentation.navigation.Destinations.*
-import com.softgames.rentme.presentation.screens.auth.AuthViewModel
 import com.softgames.rentme.presentation.screens.auth.login_screen.LoginScreen
 import com.softgames.rentme.presentation.screens.auth.phone_auth_screen.PhoneAuthScreen
 import com.softgames.rentme.presentation.screens.home.guest_home.GuestHomeScreen
 import com.softgames.rentme.presentation.screens.home.host_home.HostHomeScreen
+import com.softgames.rentme.presentation.screens.home.house_detail.HouseDetailScreen
 import com.softgames.rentme.presentation.screens.home.register_house.RegisterHouseScreen
 import com.softgames.rentme.presentation.screens.register.RegisterScreen
 
@@ -21,39 +20,61 @@ fun NavigationHost(
 ) {
 
     val navController = rememberNavController()
-    val authViewModel: AuthViewModel = viewModel()
 
     NavHost(
-        navController = navController, startDestination = RegisterHouseScreen.route
+        navController = navController, startDestination = LoginScreen.route
     ) {
 
         composable(LoginScreen.route) {
             LoginScreen(
-                authViewModel = authViewModel,
                 onCloseScreen = { },
-                showPhoneAuthScreen = {
-                    navController.navigate(PhoneAuthScreen.route)
+                navigatePhoneAuthScreen = { countryCode, phone ->
+                    navController.navigate(PhoneAuthScreen.createRoute(countryCode, phone))
                 },
-                showHomeScreen = {
+                navigateGuestHomeScreen = {
                     navController.navigate(GuestHomeScreen.route) {
-                        popUpTo(LoginScreen.route) {
-                            inclusive = true
-                        }
+                        popUpTo(LoginScreen.route) { inclusive = true }
                     }
-                }
+                },
+                navigateHostHomeScreen = {}
             )
         }
 
         composable(PhoneAuthScreen.route) {
+
+            val countryCode = it.arguments?.getString("countryCode")!!
+            val phone = it.arguments?.getString("phone")!!
+
             PhoneAuthScreen(
-                authViewModel = authViewModel,
+                activity = activity,
+                countryCode = countryCode,
+                phone = phone,
                 onBackPressed = { navController.popBackStack() },
-                showRegisterScreen = { navController.navigate(RegisterScreen.route) }
+                navigateRegisterScreen = { userId ->
+                    navController.navigate(RegisterScreen.createRoute(userId)) {
+                        popUpTo(PhoneAuthScreen.route) { inclusive = true }
+                    }
+                },
+                navigateHomeHostScreen = {},
+                navigateHomeGuestScreen = {}
             )
         }
 
         composable(RegisterScreen.route) {
-            RegisterScreen(activity)
+
+            val userId = it.arguments?.getString("userId") ?: ""
+
+            RegisterScreen(
+                userId = userId,
+                activity = activity,
+                navigateHostHomeScreen = {
+                    navController.navigate(HostHomeScreen.route)
+                },
+                navigateGuestHomeScreen = {
+                    navController.navigate(GuestHomeScreen.route)
+                },
+                onCloseScreen = { navController.popBackStack() }
+            )
         }
 
         composable(GuestHomeScreen.route) {
@@ -69,6 +90,10 @@ fun NavigationHost(
                 activity = activity,
                 onCloseClicked = { navController.popBackStack() }
             )
+        }
+
+        composable(HouseDetailScreen.route) {
+            HouseDetailScreen()
         }
 
     }

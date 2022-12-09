@@ -52,7 +52,7 @@ fun SmsCodeImage() {
 @Composable
 fun PhoneMessageCard(
     phoneNumber: String = "+52 3222550033",
-    changePhoneNumber: () -> Unit,
+    onChangeClicked: () -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -73,7 +73,7 @@ fun PhoneMessageCard(
                     modifier = Modifier.weight(1f),
                     color = MaterialTheme.colorScheme.tertiary,
                 )
-                OutlinedButton(onClick = changePhoneNumber) {
+                OutlinedButton(onClick = onChangeClicked) {
                     Text("Cambiar")
                 }
             }
@@ -83,9 +83,13 @@ fun PhoneMessageCard(
 
 @Composable
 fun VerifyPhoneButton(
+    enabled: Boolean,
     onClick: () -> Unit,
 ) {
-    MyButton(onClick = onClick) {
+    MyButton(
+        onClick = onClick,
+        enabled = enabled
+    ) {
         Text(text = "Finalizar")
     }
 }
