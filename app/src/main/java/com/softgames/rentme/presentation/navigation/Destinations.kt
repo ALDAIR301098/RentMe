@@ -10,8 +10,11 @@ sealed class Destinations(val route: String) {
         fun createRoute(userId: String) = "RegisterScreen/$userId"
     }
 
-    object GuestHomeScreen : Destinations("GuestHomeScreen")
+    object GuestHomeScreen : Destinations("GuestHomeScreen/{userId}")
     object HostHomeScreen : Destinations("HostHomeScreen")
     object HouseDetailScreen : Destinations("HouseDetailScreen")
-    object RegisterHouseScreen : Destinations("RegisterHouseScreen")
+
+    object RegisterHouseScreen : Destinations("RegisterHouseScreen/{userId}") {
+        fun createRoute(userId: String) = "RegisterHouseScreen/$userId"
+    }
 }

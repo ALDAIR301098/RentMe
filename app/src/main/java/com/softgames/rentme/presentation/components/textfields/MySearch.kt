@@ -1,11 +1,11 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.softgames.rentme.presentation.components.textfields
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,11 +38,15 @@ fun MySearch(
     textStyle: TextStyle = LocalTextStyle.current.copy(
         fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface
     ),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
+        imeAction = ImeAction.Search
+    ),
+    keyboardActions: KeyboardActions = KeyboardActions(),
     shape: Shape = RoundedCornerShape(100),
 ) {
 
     var isFocused by remember { mutableStateOf(false) }
-    var isDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = isSystemInDarkTheme()
 
     BasicTextField(
         value = text,
@@ -49,6 +54,8 @@ fun MySearch(
         singleLine = true,
         textStyle = textStyle,
         modifier = modifier.onFocusEvent { isFocused = it.isFocused },
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         cursorBrush = SolidColor(if (isDarkTheme) Color.Gray else MaterialTheme.colorScheme.secondary),
         decorationBox = { innerTextField ->
             Surface(
@@ -66,13 +73,15 @@ fun MySearch(
 
                     Spacer(Modifier.width(16.dp))
                     Box(Modifier.weight(1f)) {
-                        if (placeholder != null){
-                            if (!isFocused){
-                                Text(text = placeholder, color = if (isDarkTheme) Color.Gray else Color.DarkGray, fontSize = 16.sp)
+                        if (placeholder != null) {
+                            if (!isFocused) {
+                                Text(text = placeholder,
+                                    color = if (isDarkTheme) Color.Gray else Color.DarkGray,
+                                    fontSize = 16.sp)
                             } else {
                                 innerTextField.invoke()
                             }
-                        } else{
+                        } else {
                             innerTextField.invoke()
                         }
                     }

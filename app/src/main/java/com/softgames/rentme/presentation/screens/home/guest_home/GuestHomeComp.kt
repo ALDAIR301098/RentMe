@@ -5,6 +5,7 @@ package com.softgames.rentme.presentation.screens.home.guest_home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Favorite
@@ -33,7 +34,8 @@ import com.softgames.rentme.presentation.theme.RentMeTheme
 fun HomeAppBar(
     txtSearch: String,
     onQueryChange: (String) -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior
+    onSearchPressed: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -43,20 +45,21 @@ fun HomeAppBar(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-
-
                 MySearch(
                     text = txtSearch,
                     onTextChange = onQueryChange,
                     leadingIcon = { MyIcon(Icons.Outlined.Search) },
-                    placeholder = "Bucar departamento"
+                    placeholder = "Bucar departamento",
+                    keyboardActions = KeyboardActions(
+                        onSearch = { onSearchPressed() }
+                    )
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
     )
 }
 

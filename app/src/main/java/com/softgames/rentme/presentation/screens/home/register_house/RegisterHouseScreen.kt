@@ -24,25 +24,31 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ComponentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.softgames.rentme.domain.model.ScreenState
+import com.softgames.rentme.domain.model.ScreenState.*
+import com.softgames.rentme.domain.model.toHost
 import com.softgames.rentme.presentation.components.others.MyIcon
 import com.softgames.rentme.presentation.screens.register.composables.PhotoSelectorDialog
 import com.softgames.rentme.presentation.theme.RentMeTheme
-import com.softgames.rentme.presentation.util.CropImage1x1
 import com.softgames.rentme.presentation.util.CropImage3x2
+import com.softgames.rentme.services.AuthService
 import com.softgames.rentme.util.createUriFromFile
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterHouseScreen(
+    userId: String,
     activity: ComponentActivity,
     onCloseClicked: () -> Unit,
     viewModel: RegisterHouseViewModel = viewModel(),
 ) {
 
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val imageList = remember { mutableStateListOf<Uri>() }
+    //val imageList = remember { mutableStateListOf<Uri>() }
 
     var showCameraPermissionDeniedDialog by remember { mutableStateOf(false) }
     var isPhotoDialogPickerVisible by remember { mutableStateOf(false) }
@@ -51,7 +57,7 @@ fun RegisterHouseScreen(
         contract = CropImage3x2()
     ) {
         it?.let {
-            imageList.add(it)
+            viewModel.addImageUri(it)
         }
     }
 
@@ -98,127 +104,164 @@ fun RegisterHouseScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            LargeTopAppBar(
-                scrollBehavior = scrollBehavior,
-                title = { Text("Registrar casa / departamento") },
-                navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        MyIcon(Icons.Outlined.Close)
-                    }
-                }
-            )
-        },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) { paddingValues ->
+    LaunchedEffect(Unit) {
+        scope.launch {
+            val user = AuthService.getUserInfo(userId).toHost()
+            viewModel.updateCurrentUser(user)
+        }
+    }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(
-                    rememberScrollState())
-        ) {
-            Spacer(Modifier.height(24.dp))
+    when (viewModel.screenState) {
 
-            PhotoViewPager(
-                imageList = imageList.toList(),
-                onItemClick = { isPhotoDialogPickerVisible = true }
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-
-                HouseNameTextField(
-                    text = viewModel.houseName.text,
-                    onTextChange = { viewModel.updateHouseName(it) },
-                    error = viewModel.houseName.error
-                )
-
-                ColonyTextField(
-                    text = viewModel.colony.text,
-                    onTextChange = { viewModel.updateColony(it) },
-                    error = viewModel.colony.error
-                )
-
-                DescriptionTextField(
-                    text = viewModel.description.text,
-                    onTextChange = { viewModel.updateDescription(it) },
-                    error = viewModel.description.error
-                )
-
-                PriceTextField(
-                    text = viewModel.price.text,
-                    onTextChange = { viewModel.updatePrice(it) },
-                    error = viewModel.price.error
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    GuestNumberTextField(
-                        modifier = Modifier.weight(1f),
-                        text = viewModel.guestNumber.text,
-                        onTextChange = { viewModel.updateGuestNumbers(it) },
-                        error = viewModel.guestNumber.error,
-                    )
-                    RoomsTextField(
-                        modifier = Modifier.weight(1f),
-                        text = viewModel.rooms.text,
-                        onTextChange = { viewModel.updateRooms(it) },
-                        error = viewModel.rooms.error
-                    )
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    BeedsTextField(
-                        modifier = Modifier.weight(1f),
-                        text = viewModel.beds.text,
-                        onTextChange = { viewModel.updateBeds(it) },
-                        error = viewModel.beds.error
-                    )
-                    BathroomsTextField(
-                        modifier = Modifier.weight(1f),
-                        text = viewModel.bathrooms.text,
-                        onTextChange = { viewModel.updateBathrooms(it) },
-                        error = viewModel.bathrooms.error
-                    )
-                }
-
-                Spacer(Modifier.height(8.dp))
-
-                RegisterButton { }
-
-            }
+        is FINISHED -> {
+           LaunchedEffect(Unit) {
+               viewModel.updateScreenState(WAITING)
+               onCloseClicked()
+           }
         }
 
-        if (isPhotoDialogPickerVisible) {
-            PhotoSelectorDialog(
-                onCameraClicked = {
-                    isPhotoDialogPickerVisible = false
-                    cameraPermission.launch(Manifest.permission.CAMERA)
+        else -> {
+
+            Scaffold(
+                topBar = {
+                    LargeTopAppBar(
+                        scrollBehavior = scrollBehavior,
+                        title = { Text("Registrar casa o departamento") },
+                        navigationIcon = {
+                            IconButton(onClick = { /*TODO*/ }) {
+                                MyIcon(Icons.Outlined.Close)
+                            }
+                        }
+                    )
                 },
-                onGalleryClicked = {
-                    isPhotoDialogPickerVisible = false
-                    galleryImagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                },
-                onFileClicked = {
-                    isPhotoDialogPickerVisible = false
-                    imageFilesPicker.launch("image/*")
-                },
-                onDissmiss = {
-                    isPhotoDialogPickerVisible = false
-                },
-            )
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+            ) { paddingValues ->
+
+                Column(Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)) {
+
+                    if (viewModel.screenState is LOADING) {
+                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                        Spacer(Modifier.height(16.dp))
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Spacer(Modifier.height(24.dp))
+
+                        PhotoViewPager(
+                            imageList = viewModel.imageList,
+                            onItemClick = { isPhotoDialogPickerVisible = true }
+                        )
+
+                        Spacer(Modifier.height(24.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+
+                            HouseNameTextField(
+                                text = viewModel.txfHouseName.text,
+                                onTextChange = { viewModel.updateHouseName(it) },
+                                error = viewModel.txfHouseName.error
+                            )
+
+                            ColonyTextField(
+                                text = viewModel.txfColony.text,
+                                onTextChange = { viewModel.updateColony(it) },
+                                error = viewModel.txfColony.error
+                            )
+
+                            DescriptionTextField(
+                                text = viewModel.txfDescription.text,
+                                onTextChange = { viewModel.updateDescription(it) },
+                                error = viewModel.txfDescription.error
+                            )
+
+                            PriceTextField(
+                                text = viewModel.txfPrice.text,
+                                onTextChange = { viewModel.updatePrice(it) },
+                                error = viewModel.txfPrice.error
+                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                GuestNumberTextField(
+                                    modifier = Modifier.weight(1f),
+                                    text = viewModel.txfGuestNumber.text,
+                                    onTextChange = { viewModel.updateGuestNumbers(it) },
+                                    error = viewModel.txfGuestNumber.error,
+                                )
+                                RoomsTextField(
+                                    modifier = Modifier.weight(1f),
+                                    text = viewModel.txfRooms.text,
+                                    onTextChange = { viewModel.updateRooms(it) },
+                                    error = viewModel.txfRooms.error
+                                )
+                            }
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                BeedsTextField(
+                                    modifier = Modifier.weight(1f),
+                                    text = viewModel.txfBeds.text,
+                                    onTextChange = { viewModel.updateBeds(it) },
+                                    error = viewModel.txfBeds.error
+                                )
+                                BathroomsTextField(
+                                    modifier = Modifier.weight(1f),
+                                    text = viewModel.txfBathrooms.text,
+                                    onTextChange = { viewModel.updateBathrooms(it) },
+                                    error = viewModel.txfBathrooms.error
+                                )
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            RegisterButton { viewModel.registerHouse() }
+
+                        }
+                    }
+                }
+
+                if (isPhotoDialogPickerVisible) {
+                    PhotoSelectorDialog(
+                        onCameraClicked = {
+                            isPhotoDialogPickerVisible = false
+                            cameraPermission.launch(Manifest.permission.CAMERA)
+                        },
+                        onGalleryClicked = {
+                            isPhotoDialogPickerVisible = false
+                            galleryImagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        },
+                        onFileClicked = {
+                            isPhotoDialogPickerVisible = false
+                            imageFilesPicker.launch("image/*")
+                        },
+                        onDissmiss = {
+                            isPhotoDialogPickerVisible = false
+                        },
+                    )
+                }
+
+                viewModel.registerError?.let {
+                    RegisterHouseErrorDialog(
+                        error = it,
+                        onDissmiss = { viewModel.hideRegisterErrorDialog() }
+                    )
+                }
+
+            }
+
         }
 
     }
@@ -226,10 +269,10 @@ fun RegisterHouseScreen(
 
 
 @SuppressLint("RestrictedApi")
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1000)
 @Composable
 private fun RegisterHouseScreenPreview() {
     RentMeTheme {
-        RegisterHouseScreen(ComponentActivity(), {})
+        RegisterHouseScreen("", ComponentActivity(), {})
     }
 }

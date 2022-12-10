@@ -19,6 +19,8 @@ import com.softgames.rentme.domain.model.ScreenState.*
 import com.softgames.rentme.presentation.screens.auth.phone_auth_screen.composables.*
 import com.softgames.rentme.presentation.theme.RentMeTheme
 import com.softgames.rentme.presentation.util.showMessage
+import com.softgames.rentme.services.AuthService
+import kotlinx.coroutines.launch
 
 @Composable
 fun PhoneAuthScreen(
@@ -27,8 +29,8 @@ fun PhoneAuthScreen(
     countryCode: String,
     viewModel: PhoneAuthViewModel = viewModel(),
     navigateRegisterScreen: (String) -> Unit,
-    navigateHomeGuestScreen: () -> Unit,
-    navigateHomeHostScreen: () -> Unit,
+    navigateGuestHomeScreen: () -> Unit,
+    navigateHostHomeScreen: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
 
@@ -60,12 +62,25 @@ fun PhoneAuthScreen(
 
         is FINISHED -> {
             LaunchedEffect(Unit) {
-                if (viewModel.checkIfUserExist()) {
-                    viewModel.updateScreenState(WAITING)
-                    navigateHomeGuestScreen()
-                } else {
-                    viewModel.updateScreenState(WAITING)
-                    navigateRegisterScreen(viewModel.userId!!)
+                scope.launch {
+                    val userInfo = AuthService.getUserInfo(viewModel.userId!!)
+                    if (userInfo.exists()) {
+                        val userType = userInfo.getString("type")!!
+                        when (userType) {
+                            "Guest" -> {
+                                viewModel.updateScreenState(WAITING)
+                                navigateGuestHomeScreen()
+                            }
+                            "Host" -> {
+                                viewModel.updateScreenState(WAITING)
+                                navigateHostHomeScreen()
+                            }
+                        }
+
+                    } else {
+                        viewModel.updateScreenState(WAITING)
+                        navigateRegisterScreen(viewModel.userId!!)
+                    }
                 }
             }
         }
@@ -155,8 +170,8 @@ private fun PhoneAuthScreenPreview() {
             countryCode = "52",
             phone = "3221827267",
             navigateRegisterScreen = {},
-            navigateHomeGuestScreen = {},
-            navigateHomeHostScreen = {},
+            navigateGuestHomeScreen = {},
+            navigateHostHomeScreen = {},
             onBackPressed = {}
         )
     }

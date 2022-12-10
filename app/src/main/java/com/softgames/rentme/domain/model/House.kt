@@ -1,11 +1,15 @@
 package com.softgames.rentme.domain.model
 
 import android.net.Uri
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Exclude
 import com.softgames.rentme.domain.model.RentMeUser.*
 
 data class House(
+    @get: Exclude var id: String = "",
     var name: String = "",
-    var host: Host = Host,
+    var hostName: String = "",
+    var hostPhoto: String? = "",
     var colony: String = "",
     var description: String = "",
     var price: Float = 0.0f,
@@ -15,5 +19,22 @@ data class House(
     var bathrooms: Int = 0,
     var photoList: List<Uri> = emptyList(),
     var rating: Float = 0.0f,
-    var timesRated: Int = 0
+    var timesRated: Int = 0,
 )
+
+fun DocumentSnapshot.toHouse() =
+    House(
+        id = id,
+        name = getString("name")!!,
+        hostName = getString("hostName")!!,
+        hostPhoto = getString("hostPhoto"),
+        colony = getString("colony")!!,
+        description = getString("description")!!,
+        price = getDouble("price")!!.toFloat(),
+        guestNumber = getLong("guestNumber")!!.toInt(),
+        rooms = getLong("rooms")!!.toInt(),
+        beds = getLong("beds")!!.toInt(),
+        bathrooms = getLong("bathrooms")!!.toInt(),
+        rating = getDouble("rating")!!.toFloat(),
+        timesRated = getLong("timesRated")!!.toInt(),
+    )

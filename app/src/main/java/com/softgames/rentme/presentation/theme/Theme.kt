@@ -90,8 +90,7 @@ fun RentMeTheme(
         systemUiController.setNavigationBarColor(
             color = Color.Black
         )
-        onDispose {
-        }
+        onDispose { }
     }
 
     MaterialTheme(

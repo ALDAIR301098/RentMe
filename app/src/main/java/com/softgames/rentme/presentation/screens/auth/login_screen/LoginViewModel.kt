@@ -4,15 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.softgames.rentme.data.model.Country
 import com.softgames.rentme.data.source.countries
 import com.softgames.rentme.domain.model.ScreenState
-import com.softgames.rentme.domain.model.ScreenState.*
+import com.softgames.rentme.domain.model.ScreenState.USING
 import com.softgames.rentme.domain.model.TextFieldValue
 import com.softgames.rentme.util.unacent
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
 
@@ -77,7 +74,9 @@ class LoginViewModel : ViewModel() {
 
     private fun searchCountry(code: String) = try {
         countries.filter { it.code == code }[0]
-    } catch (e: Exception) { null }
+    } catch (e: Exception) {
+        null
+    }
 
     fun validateTextFields(): Boolean {
 

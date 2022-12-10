@@ -7,7 +7,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -191,4 +193,18 @@ fun RegisterButton(
     MyButton(onClick) {
         Text("Finalizar registro")
     }
+}
+
+@Composable
+fun RegisterHouseErrorDialog(
+    error: String,
+    onDissmiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDissmiss,
+        icon = { MyIcon(Icons.Outlined.Report) },
+        title = { Text("Hubo un error") },
+        text = { Text(error) },
+        confirmButton = { TextButton(onDissmiss) { Text("Aceptar") } }
+    )
 }

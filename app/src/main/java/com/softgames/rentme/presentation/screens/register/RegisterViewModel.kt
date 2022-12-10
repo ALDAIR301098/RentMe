@@ -97,7 +97,7 @@ class RegisterViewModel : ViewModel() {
 
                     //SET DATA TO USER
                     user.apply {
-                        id = userId!!; name = txfName.text; lastName = txfLastName.text
+                        uid = userId!!; name = txfName.text; lastName = txfLastName.text
                         gender = txfGender.text; birthDate = txfBirthDate.text
                     }
 
@@ -136,7 +136,7 @@ class RegisterViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                val imageUrl = StorageService.uploadPhoto(userId, uri)
+                val imageUrl = StorageService.uploadUserPhoto(userId, uri)
                 onSuccess(imageUrl)
             } catch (e: Exception) {
                 screenState = USING

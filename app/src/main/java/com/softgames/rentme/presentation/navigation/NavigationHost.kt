@@ -1,7 +1,7 @@
 package com.softgames.rentme.presentation.navigation
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -17,12 +17,13 @@ import com.softgames.rentme.presentation.screens.register.RegisterScreen
 @Composable
 fun NavigationHost(
     activity: ComponentActivity,
+    startDestination: String,
 ) {
 
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController, startDestination = LoginScreen.route
+        navController = navController, startDestination = startDestination
     ) {
 
         composable(LoginScreen.route) {
@@ -55,8 +56,8 @@ fun NavigationHost(
                         popUpTo(PhoneAuthScreen.route) { inclusive = true }
                     }
                 },
-                navigateHomeHostScreen = {},
-                navigateHomeGuestScreen = {}
+                navigateHostHomeScreen = { navController.navigate(HostHomeScreen.route) },
+                navigateGuestHomeScreen = { navController.navigate(GuestHomeScreen.route) }
             )
         }
 
@@ -78,15 +79,23 @@ fun NavigationHost(
         }
 
         composable(GuestHomeScreen.route) {
-            GuestHomeScreen()
+            GuestHomeScreen(activity)
         }
 
         composable(HostHomeScreen.route) {
-            HostHomeScreen()
+            HostHomeScreen(
+                navigateRegisterHouseScreen = { userId ->
+                    navController.navigate(RegisterHouseScreen.createRoute(userId))
+                }
+            )
         }
 
         composable(RegisterHouseScreen.route) {
+
+            val userId = it.arguments?.getString("userId") ?: "Pepito"
+
             RegisterHouseScreen(
+                userId = userId,
                 activity = activity,
                 onCloseClicked = { navController.popBackStack() }
             )

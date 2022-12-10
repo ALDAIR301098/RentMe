@@ -106,7 +106,7 @@ fun CodeTextField(
 
     MyOutlinedTextField(
         text = text,
-        modifier = Modifier.width(125.dp),
+        modifier = Modifier.width(130.dp),
         label = { Text("Lada") },
         onTextChange = { if (it.length <= 3) onTextChange(it.trim()) },
         leadingIcon = { Text("+") },
