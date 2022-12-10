@@ -140,7 +140,7 @@ fun RegisterHouseScreen(
                 Column(Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())) {
+                ) {
 
                     if (viewModel.screenState is LOADING) {
                         LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -148,7 +148,9 @@ fun RegisterHouseScreen(
                     }
 
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
                         Spacer(Modifier.height(24.dp))
 
