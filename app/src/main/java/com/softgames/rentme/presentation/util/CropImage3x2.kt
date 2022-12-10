@@ -17,7 +17,7 @@ class CropImage3x2 : ActivityResultContract<Pair<Uri, Uri>, Uri?>() {
 
     private fun opcionesRecorte(): UCrop.Options {
         val crop_options = UCrop.Options()
-        crop_options.withAspectRatio(3f, 2f)
+        crop_options.withAspectRatio(3f, 2.3f)
         crop_options.withMaxResultSize(1000, 1000)
         crop_options.setCompressionQuality(70)
         crop_options.setHideBottomControls(false)

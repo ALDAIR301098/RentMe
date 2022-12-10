@@ -1,5 +1,6 @@
 package com.softgames.rentme.presentation.navigation
 
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
@@ -79,13 +80,20 @@ fun NavigationHost(
         }
 
         composable(GuestHomeScreen.route) {
-            GuestHomeScreen(activity)
+            GuestHomeScreen(
+                navigateHouseDetailScreen = { houseId ->
+                    navController.navigate(HouseDetailScreen.createRoute(houseId))
+                },
+            )
         }
 
         composable(HostHomeScreen.route) {
             HostHomeScreen(
                 navigateRegisterHouseScreen = { userId ->
                     navController.navigate(RegisterHouseScreen.createRoute(userId))
+                },
+                navigateHouseDetailScreen = { houseId ->
+                    navController.navigate(HouseDetailScreen.createRoute(houseId))
                 }
             )
         }
@@ -97,12 +105,18 @@ fun NavigationHost(
             RegisterHouseScreen(
                 userId = userId,
                 activity = activity,
-                onCloseClicked = { navController.popBackStack() }
+                onFinish = {
+                    navController.navigate(HostHomeScreen.route) {
+                        popUpTo(RegisterHouseScreen.route) { inclusive = true }
+                    }
+                }
             )
         }
 
         composable(HouseDetailScreen.route) {
-            HouseDetailScreen()
+            val houseId = it.arguments?.getString("houseId") ?: "Pepito"
+            Log.d("ALLDAIR", "houseId: $houseId")
+            HouseDetailScreen(houseId)
         }
 
     }

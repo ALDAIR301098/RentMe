@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ComponentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.softgames.rentme.domain.model.ScreenState
 import com.softgames.rentme.domain.model.ScreenState.*
 import com.softgames.rentme.domain.model.toHost
 import com.softgames.rentme.presentation.components.others.MyIcon
@@ -39,7 +38,7 @@ import kotlinx.coroutines.launch
 fun RegisterHouseScreen(
     userId: String,
     activity: ComponentActivity,
-    onCloseClicked: () -> Unit,
+    onFinish: () -> Unit,
     viewModel: RegisterHouseViewModel = viewModel(),
 ) {
 
@@ -116,7 +115,7 @@ fun RegisterHouseScreen(
         is FINISHED -> {
            LaunchedEffect(Unit) {
                viewModel.updateScreenState(WAITING)
-               onCloseClicked()
+               onFinish()
            }
         }
 

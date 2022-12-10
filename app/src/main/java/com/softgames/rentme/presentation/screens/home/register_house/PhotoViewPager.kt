@@ -38,7 +38,7 @@ fun PhotoViewPager(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp)
+                .height(275.dp)
                 .padding(horizontal = 20.dp)
                 .clip(RoundedCornerShape(28.dp))
                 .background(MaterialTheme.colorScheme.tertiary)

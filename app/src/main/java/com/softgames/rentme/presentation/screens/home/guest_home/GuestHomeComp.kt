@@ -1,8 +1,9 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 
 package com.softgames.rentme.presentation.screens.home.guest_home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,12 +13,16 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +30,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
 import com.softgames.rentme.domain.model.House
 import com.softgames.rentme.presentation.components.others.MyIcon
 import com.softgames.rentme.presentation.components.textfields.MySearch
@@ -66,12 +76,15 @@ fun HomeAppBar(
 @Composable
 fun HouseItem(
     house: House,
+    onClick: (House) -> Unit,
 ) {
 
     var isFavorite by rememberSaveable { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        Modifier
+            .fillMaxWidth()
+            .clickable { onClick(house) },
     ) {
 
         //HOUSE IMAGE
@@ -80,9 +93,30 @@ fun HouseItem(
                 .fillMaxWidth()
                 .height(350.dp)
                 .clip(RoundedCornerShape(28.dp))
-                .background(Color.Blue)
 
         ) {
+
+            val pagerState = rememberPagerState()
+
+            HorizontalPager(
+                count = house.photoList.size,
+                state = pagerState,
+            ) { index ->
+                AsyncImage(
+                    model = house.photoList[index],
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
+            )
+
             IconButton(
                 onClick = { isFavorite = !isFavorite },
                 modifier = Modifier
@@ -103,8 +137,7 @@ fun HouseItem(
         ) {
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth()
             ) {
 
                 Text(
@@ -115,6 +148,7 @@ fun HouseItem(
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Row(
+                    modifier = Modifier.padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     MyIcon(imageVector = Icons.Filled.Star, modifier = Modifier.size(20.dp))
@@ -146,20 +180,5 @@ fun HouseItem(
             )
         }
 
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HouseItemPreview() {
-    RentMeTheme {
-        val house = House(
-            name = "Casa del arbol",
-            rating = 4.6f,
-            timesRated = 10,
-            colony = "Fluvial Vallarta",
-            price = 7500f
-        )
-        HouseItem(house)
     }
 }

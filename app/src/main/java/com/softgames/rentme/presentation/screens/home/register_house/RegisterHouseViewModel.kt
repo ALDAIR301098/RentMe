@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.util.toRange
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softgames.rentme.domain.model.*
@@ -14,6 +15,7 @@ import com.softgames.rentme.services.RegisterService
 import com.softgames.rentme.services.StorageService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class RegisterHouseViewModel : ViewModel() {
 
@@ -114,6 +116,7 @@ class RegisterHouseViewModel : ViewModel() {
                 viewModelScope.launch {
                     val house = House(
                         name = txfHouseName.text,
+                        hostId = currentUser!!.uid,
                         hostName = currentUser!!.name,
                         hostPhoto = currentUser!!.photo,
                         colony = txfColony.text,
@@ -122,7 +125,9 @@ class RegisterHouseViewModel : ViewModel() {
                         guestNumber = txfGuestNumber.text.toInt(),
                         rooms = txfRooms.text.toInt(),
                         beds = txfBeds.text.toInt(),
-                        bathrooms = txfBathrooms.text.toInt()
+                        bathrooms = txfBathrooms.text.toInt(),
+                        rating = (10..50).random().div(10).toFloat(),
+                        timesRated = (1..100).random(),
                     )
                     val houseId = RegisterService.registerHouse(house).id
                     val photoUrls =

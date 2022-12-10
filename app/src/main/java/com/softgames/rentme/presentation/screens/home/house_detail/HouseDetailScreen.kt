@@ -1,5 +1,6 @@
 package com.softgames.rentme.presentation.screens.home.house_detail
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -7,19 +8,35 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bed
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.MeetingRoom
-import androidx.compose.material.icons.outlined.Room
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.softgames.rentme.data.repository.HousesRepo
 import com.softgames.rentme.domain.model.HouseFeature
 import com.softgames.rentme.presentation.theme.RentMeTheme
+import kotlinx.coroutines.launch
 
 @Composable
-fun HouseDetailScreen() {
+fun HouseDetailScreen(
+    houseId: String,
+    viewModel: HouseDetailViewModel = HouseDetailViewModel(),
+) {
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            val house = HousesRepo.getCurrentHouse(houseId)
+            Log.d("ALDAIR", "House: ${house.name}")
+            viewModel.updateHouse(house)
+        }
+    }
 
     ConstraintLayout {
 
@@ -36,7 +53,7 @@ fun HouseDetailScreen() {
                 },
         ) {
 
-            ImagesViewPager(imageList = emptyList())
+            ImagesViewPager(viewModel.house!!.photoList)
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -47,18 +64,26 @@ fun HouseDetailScreen() {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-                HouseName(name = "Casa deo arbol")
+                HouseName(name = viewModel.house!!.name)
 
-                HouseDetails(rating = 4.9f, timesRated = 11, colony = "Lopez Mateos")
+                HouseDetails(
+                    rating = viewModel.house!!.rating,
+                    timesRated = viewModel.house!!.timesRated,
+                    colony = viewModel.house!!.colony
+                )
 
                 Divider(Modifier.fillMaxWidth())
 
-                HostRow(name = "Jose Alfredo", photo = null)
+                HostRow(
+                    name = viewModel.house!!.hostName,
+                    photo = viewModel.house!!.hostPhoto
+                )
 
                 Divider(Modifier.fillMaxWidth())
 
-                HouseDescription(description = "Es una casa muy bonita, cercas del mar" +
-                        "es color azul, muy tranquilo la zona, muy bien ubicada.")
+                HouseDescriptionTitle()
+
+                HouseDescription(description = viewModel.house!!.description)
 
                 Divider(Modifier.fillMaxWidth())
 
@@ -72,11 +97,17 @@ fun HouseDetailScreen() {
 
             HouseFeaturesItems(
                 listOf(
-                HouseFeature("Baños", quantity = 3),
-                HouseFeature("Camas", quantity = 2, icon = Icons.Outlined.Bed),
-                HouseFeature("Cuartos", quantity = 4, icon = Icons.Outlined.MeetingRoom),
-                HouseFeature("Personas", quantity = 4, icon = Icons.Outlined.Groups)
-            ))
+                    HouseFeature(name = "Baños", quantity = viewModel.house!!.bathrooms),
+                    HouseFeature("Camas",
+                        quantity = viewModel.house!!.beds,
+                        icon = Icons.Outlined.Bed),
+                    HouseFeature("Cuartos",
+                        quantity = viewModel.house!!.rooms,
+                        icon = Icons.Outlined.MeetingRoom),
+                    HouseFeature("Personas",
+                        quantity = viewModel.house!!.guestNumber,
+                        icon = Icons.Outlined.Groups)
+                ))
 
             Spacer(modifier = Modifier.height(48.dp))
 
@@ -84,7 +115,7 @@ fun HouseDetailScreen() {
 
         PriceBar(
             modifier = Modifier.constrainAs(priceBar) { bottom.linkTo(parent.bottom) },
-            price = 5750f
+            price = viewModel.house!!.price
         )
 
     }
@@ -95,6 +126,6 @@ fun HouseDetailScreen() {
 @Composable
 private fun HouseDetailScreenPreview() {
     RentMeTheme {
-        HouseDetailScreen()
+        HouseDetailScreen("")
     }
 }
