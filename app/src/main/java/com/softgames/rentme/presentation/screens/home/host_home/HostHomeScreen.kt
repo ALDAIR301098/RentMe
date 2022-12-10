@@ -40,9 +40,12 @@ fun HostHomeScreen(
         topBar = {
             HomeAppBar(
                 txtSearch = viewModel.txtSearch,
-                onQueryChange = { viewModel.updateTxtSearch(it) },
+                onQueryChange = {
+                    viewModel.updateTxtSearch(it)
+                    viewModel.filterHousesList()
+                },
                 scrollBehavior = scrollBehavior,
-                onSearchPressed = { showMessage(context, viewModel.txtSearch) }
+                onSearchPressed = { }
             )
         },
         floatingActionButton = {
@@ -72,7 +75,7 @@ fun HostHomeScreen(
 
             item { Spacer(Modifier.height(8.dp)) }
 
-            items(viewModel.housesList) { house ->
+            items(viewModel.filterHousesList) { house ->
                 HouseItem(house) {
                     navigateHouseDetailScreen(it.id)
                 }

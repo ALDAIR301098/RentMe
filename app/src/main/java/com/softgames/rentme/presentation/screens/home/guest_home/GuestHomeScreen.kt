@@ -17,9 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ComponentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.softgames.rentme.domain.model.House
 import com.softgames.rentme.presentation.theme.RentMeTheme
 
 @Composable
@@ -34,9 +32,10 @@ fun GuestHomeScreen(
         topBar = {
             HomeAppBar(
                 txtSearch = viewModel.txtSearch,
-                onQueryChange = { viewModel.updateTxtSearch(it) },
+                onQueryChange = { viewModel.updateTxtSearch(it)
+                                viewModel.filterHousesList() },
                 scrollBehavior = scrollBehavior,
-                onSearchPressed = {}
+                onSearchPressed = { }
             )
         },
         modifier = Modifier
@@ -53,7 +52,7 @@ fun GuestHomeScreen(
 
             item { Spacer(Modifier.height(8.dp)) }
 
-            items(viewModel.housesList) { house ->
+            items(viewModel.filterHousesList) { house ->
                 HouseItem(house) {
                     navigateHouseDetailScreen(it.id)
                 }

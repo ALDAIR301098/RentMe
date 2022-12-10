@@ -166,7 +166,7 @@ fun HouseFeatureItem(
             MyIcon(
                 imageVector = houseFeature.icon,
                 modifier = Modifier.size(48.dp),
-                tint = Color.DarkGray
+                tint = MaterialTheme.colorScheme.onSurface
             )
             Text("${houseFeature.quantity} ${houseFeature.name}")
         }
@@ -181,7 +181,8 @@ fun PriceBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(100.dp),
+        color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
     ) {
         Column {
             Divider(Modifier.fillMaxWidth())

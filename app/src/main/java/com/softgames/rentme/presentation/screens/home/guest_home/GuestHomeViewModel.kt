@@ -20,10 +20,20 @@ class GuestHomeViewModel : ViewModel() {
     var housesList: List<House> by mutableStateOf(emptyList())
         private set
 
+    var filterHousesList: List<House> by mutableStateOf(emptyList())
+        private set
+
     /* ************************************* UPDATE STATES ************************************** */
 
     fun updateTxtSearch(_txtSearch: String) {
         txtSearch = _txtSearch
+    }
+
+    fun filterHousesList() {
+        filterHousesList = housesList.filter {
+            it.name.contains(txtSearch, true) ||
+            it.colony.contains(txtSearch, true)
+        }
     }
 
     /* ************************************* FUNCTIONS ****************************************** */
@@ -31,6 +41,7 @@ class GuestHomeViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             housesList = HousesRepo.getFullHomeList().map { it.toHouse() }
+            filterHousesList = housesList
         }
     }
 

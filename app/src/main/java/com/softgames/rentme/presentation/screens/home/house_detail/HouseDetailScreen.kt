@@ -109,12 +109,14 @@ fun HouseDetailScreen(
                         icon = Icons.Outlined.Groups)
                 ))
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(56.dp))
 
         }
 
         PriceBar(
-            modifier = Modifier.constrainAs(priceBar) { bottom.linkTo(parent.bottom) },
+            modifier = Modifier
+                .navigationBarsPadding()
+                .constrainAs(priceBar) { bottom.linkTo(parent.bottom) },
             price = viewModel.house!!.price
         )
 

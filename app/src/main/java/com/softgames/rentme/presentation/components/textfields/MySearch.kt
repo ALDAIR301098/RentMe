@@ -74,7 +74,7 @@ fun MySearch(
                     Spacer(Modifier.width(16.dp))
                     Box(Modifier.weight(1f)) {
                         if (placeholder != null) {
-                            if (!isFocused) {
+                            if (!isFocused && text.isEmpty()) {
                                 Text(text = placeholder,
                                     color = if (isDarkTheme) Color.Gray else Color.DarkGray,
                                     fontSize = 16.sp)

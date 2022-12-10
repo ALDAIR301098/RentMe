@@ -1,6 +1,5 @@
 package com.softgames.rentme.presentation.screens.home.host_home
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,6 +26,16 @@ class HostHomeViewModel : ViewModel() {
     var housesList: List<House> by mutableStateOf(emptyList())
         private set
 
+    var filterHousesList: List<House> by mutableStateOf(emptyList())
+        private set
+
+    fun filterHousesList() {
+        filterHousesList = housesList.filter {
+            it.name.contains(txtSearch, true) ||
+                    it.colony.contains(txtSearch, true)
+        }
+    }
+
     /* ************************************* UPDATE STATES ************************************** */
 
     fun updateTxtSearch(_txtSearch: String) {
@@ -40,6 +49,7 @@ class HostHomeViewModel : ViewModel() {
             val userId = AuthService.getCurrentUser()?.uid
             user = AuthService.getUserInfo(userId!!).toHost()
             housesList = HousesRepo.getHostHomesList(userId).map { it.toHouse() }
+            filterHousesList = housesList
         }
     }
 

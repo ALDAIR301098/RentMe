@@ -113,10 +113,10 @@ fun RegisterHouseScreen(
     when (viewModel.screenState) {
 
         is FINISHED -> {
-           LaunchedEffect(Unit) {
-               viewModel.updateScreenState(WAITING)
-               onFinish()
-           }
+            LaunchedEffect(Unit) {
+                viewModel.updateScreenState(WAITING)
+                onFinish()
+            }
         }
 
         else -> {
@@ -133,12 +133,14 @@ fun RegisterHouseScreen(
                         }
                     )
                 },
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+                modifier = Modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) { paddingValues ->
 
                 Column(Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)) {
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())) {
 
                     if (viewModel.screenState is LOADING) {
                         LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -146,9 +148,7 @@ fun RegisterHouseScreen(
                     }
 
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         Spacer(Modifier.height(24.dp))
 
@@ -227,6 +227,8 @@ fun RegisterHouseScreen(
                             Spacer(Modifier.height(8.dp))
 
                             RegisterButton { viewModel.registerHouse() }
+
+                            Spacer(Modifier.height(16.dp))
 
                         }
                     }

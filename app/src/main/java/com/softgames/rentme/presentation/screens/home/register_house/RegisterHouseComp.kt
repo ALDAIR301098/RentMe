@@ -13,6 +13,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -94,7 +96,8 @@ fun PriceTextField(
         leadingIcon = { MyIcon(Icons.Outlined.AttachMoney) },
         trailingIcon = { Text(text = "Mxn", modifier = Modifier.padding(end = 12.dp)) },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
         )
     )
 }
@@ -106,6 +109,7 @@ fun GuestNumberTextField(
     onTextChange: (String) -> Unit,
     error: String?,
 ) {
+    val focusManager = LocalFocusManager.current
     MyOutlinedTextField(
         text = text,
         onTextChange = onTextChange,
@@ -115,7 +119,11 @@ fun GuestNumberTextField(
         supportingText = { error?.let { Text(text = it) } },
         leadingIcon = { MyIcon(Icons.Outlined.Groups) },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { focusManager.moveFocus(FocusDirection.Right) }
         )
     )
 }
@@ -127,6 +135,7 @@ fun RoomsTextField(
     onTextChange: (String) -> Unit,
     error: String?,
 ) {
+    val focusManager = LocalFocusManager.current
     MyOutlinedTextField(
         text = text,
         onTextChange = onTextChange,
@@ -136,7 +145,14 @@ fun RoomsTextField(
         supportingText = { error?.let { Text(text = it) } },
         leadingIcon = { MyIcon(Icons.Outlined.MeetingRoom) },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = {
+                focusManager.moveFocus(FocusDirection.Left)
+                focusManager.moveFocus(FocusDirection.Down)
+            }
         )
     )
 }
@@ -148,6 +164,7 @@ fun BeedsTextField(
     onTextChange: (String) -> Unit,
     error: String?,
 ) {
+    val focusManager = LocalFocusManager.current
     MyOutlinedTextField(
         text = text,
         onTextChange = onTextChange,
@@ -157,7 +174,11 @@ fun BeedsTextField(
         supportingText = { error?.let { Text(text = it) } },
         leadingIcon = { MyIcon(Icons.Outlined.Bed) },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Next
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { focusManager.moveFocus(FocusDirection.Right) }
         ),
         singleLine = true
     )
@@ -179,7 +200,8 @@ fun BathroomsTextField(
         supportingText = { error?.let { Text(text = it) } },
         leadingIcon = { MyIcon(Icons.Outlined.Bathroom) },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
         ),
         singleLine = true
 
