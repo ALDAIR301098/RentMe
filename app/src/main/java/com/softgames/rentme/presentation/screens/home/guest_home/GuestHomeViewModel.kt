@@ -7,12 +7,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.softgames.rentme.data.repository.HousesRepo
 import com.softgames.rentme.domain.model.House
+import com.softgames.rentme.domain.model.RentMeUser.*
 import com.softgames.rentme.domain.model.toHouse
 import kotlinx.coroutines.launch
 
 class GuestHomeViewModel : ViewModel() {
 
     /* *********************************** MUTABLE STATES *************************************** */
+
+    var currentUser by mutableStateOf(Guest)
+        private set
 
     var txtSearch by mutableStateOf("")
         private set
@@ -32,8 +36,12 @@ class GuestHomeViewModel : ViewModel() {
     fun filterHousesList() {
         filterHousesList = housesList.filter {
             it.name.contains(txtSearch, true) ||
-            it.colony.contains(txtSearch, true)
+                    it.colony.contains(txtSearch, true)
         }
+    }
+
+    fun setUser(_user: Guest){
+        currentUser = _user
     }
 
     /* ************************************* FUNCTIONS ****************************************** */

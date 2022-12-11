@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class)
 
 package com.softgames.rentme.presentation.screens.home.host_home
 
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -17,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.softgames.rentme.domain.model.House
+import com.softgames.rentme.domain.model.toGuest
 import com.softgames.rentme.presentation.components.others.MyIcon
 import com.softgames.rentme.presentation.screens.home.guest_home.HomeAppBar
 import com.softgames.rentme.presentation.screens.home.guest_home.HouseItem
@@ -34,11 +37,11 @@ fun HostHomeScreen(
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     Scaffold(
         topBar = {
             HomeAppBar(
+                user = viewModel.user,
                 txtSearch = viewModel.txtSearch,
                 onQueryChange = {
                     viewModel.updateTxtSearch(it)

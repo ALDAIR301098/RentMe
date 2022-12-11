@@ -18,7 +18,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.softgames.rentme.domain.model.toGuest
 import com.softgames.rentme.presentation.theme.RentMeTheme
+import com.softgames.rentme.services.AuthService
 
 @Composable
 fun GuestHomeScreen(
@@ -28,12 +30,21 @@ fun GuestHomeScreen(
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    LaunchedEffect(Unit) {
+        val userId = AuthService.getCurrentUser()?.uid!!
+        val user = AuthService.getUserInfo(userId).toGuest()
+        viewModel.setUser(user)
+    }
+
     Scaffold(
         topBar = {
             HomeAppBar(
+                user = viewModel.currentUser,
                 txtSearch = viewModel.txtSearch,
-                onQueryChange = { viewModel.updateTxtSearch(it)
-                                viewModel.filterHousesList() },
+                onQueryChange = {
+                    viewModel.updateTxtSearch(it)
+                    viewModel.filterHousesList()
+                },
                 scrollBehavior = scrollBehavior,
                 onSearchPressed = { }
             )

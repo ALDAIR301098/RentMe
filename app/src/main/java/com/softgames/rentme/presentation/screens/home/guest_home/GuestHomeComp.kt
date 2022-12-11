@@ -2,7 +2,6 @@
 
 package com.softgames.rentme.presentation.screens.home.guest_home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,7 +26,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -36,12 +34,13 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.softgames.rentme.domain.model.House
+import com.softgames.rentme.domain.model.RentMeUser
 import com.softgames.rentme.presentation.components.others.MyIcon
 import com.softgames.rentme.presentation.components.textfields.MySearch
-import com.softgames.rentme.presentation.theme.RentMeTheme
 
 @Composable
 fun HomeAppBar(
+    user: RentMeUser?,
     txtSearch: String,
     onQueryChange: (String) -> Unit,
     onSearchPressed: () -> Unit,
@@ -59,6 +58,14 @@ fun HomeAppBar(
                     text = txtSearch,
                     onTextChange = onQueryChange,
                     leadingIcon = { MyIcon(Icons.Outlined.Search) },
+                    trailingIcon = {
+                        AsyncImage(model = user?.photo,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(100))
+                        )
+                    },
                     placeholder = "Bucar departamento",
                     keyboardActions = KeyboardActions(
                         onSearch = { onSearchPressed() }
