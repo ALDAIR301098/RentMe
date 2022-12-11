@@ -44,6 +44,7 @@ fun HomeAppBar(
     txtSearch: String,
     onQueryChange: (String) -> Unit,
     onSearchPressed: () -> Unit,
+    onPhotoClicked: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     CenterAlignedTopAppBar(
@@ -59,11 +60,13 @@ fun HomeAppBar(
                     onTextChange = onQueryChange,
                     leadingIcon = { MyIcon(Icons.Outlined.Search) },
                     trailingIcon = {
-                        AsyncImage(model = user?.photo,
+                        AsyncImage(
+                            model = user?.photo,
                             contentDescription = null,
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(RoundedCornerShape(100))
+                                .clickable { onPhotoClicked() },
                         )
                     },
                     placeholder = "Bucar departamento",

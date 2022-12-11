@@ -5,9 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.util.toRange
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
 import com.softgames.rentme.domain.model.*
 import com.softgames.rentme.domain.model.RentMeUser.*
 import com.softgames.rentme.domain.model.ScreenState.*
@@ -15,7 +16,6 @@ import com.softgames.rentme.services.RegisterService
 import com.softgames.rentme.services.StorageService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class RegisterHouseViewModel : ViewModel() {
 
@@ -24,7 +24,7 @@ class RegisterHouseViewModel : ViewModel() {
     var currentUser: Host? by mutableStateOf(null)
         private set
 
-    var registerError: String? by mutableStateOf(null)
+    var imageList = mutableStateListOf<Uri>()
         private set
 
     var txfHouseName by mutableStateOf(TextFieldValue())
@@ -51,7 +51,12 @@ class RegisterHouseViewModel : ViewModel() {
     var txfBathrooms by mutableStateOf(TextFieldValue())
         private set
 
-    var imageList = mutableStateListOf<Uri>()
+    val city = GeoPoint(20.64555719345321, -105.21782682675793)
+
+    var location by mutableStateOf(GeoPoint(city.latitude, city.longitude))
+        private set
+
+    var registerError: String? by mutableStateOf(null)
         private set
 
     var screenState: ScreenState by mutableStateOf(USING)
@@ -107,6 +112,10 @@ class RegisterHouseViewModel : ViewModel() {
         screenState = state
     }
 
+    fun updateLocation(location: LatLng) {
+        this.location = GeoPoint(location.latitude, location.longitude)
+    }
+
     /* ************************************** FUNCTIONS ***************************************** */
 
     fun registerHouse() {
@@ -128,6 +137,7 @@ class RegisterHouseViewModel : ViewModel() {
                         bathrooms = txfBathrooms.text.toInt(),
                         rating = (10..50).random().div(10).toFloat(),
                         timesRated = (1..100).random(),
+                        location = location,
                     )
                     val houseId = RegisterService.registerHouse(house).id
                     val photoUrls =

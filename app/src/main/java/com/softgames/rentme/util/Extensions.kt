@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
+import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
 import java.io.File
 import java.text.Normalizer
 
@@ -13,7 +15,7 @@ fun String.unacent(): String {
     return REGEX_UNACCENT.replace(temp, "")
 }
 
-fun CharSequence.isPersonNamesOnly(): Boolean{
+fun CharSequence.isPersonNamesOnly(): Boolean {
     val regex = "^[A-Za-z ÁÉÍÓÚáéíóú]*$".toRegex()
     return regex.matches(this)
 }
@@ -23,3 +25,5 @@ fun createUriFromFile(context: Context): Uri {
         "IMG_", ".jpg", context.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
     return FileProvider.getUriForFile(context, "${context.packageName}.provider", photoFile)
 }
+
+fun GeoPoint.toLatLng() = LatLng(latitude, longitude)

@@ -19,6 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.softgames.rentme.domain.model.toGuest
+import com.softgames.rentme.presentation.components.shared.UserProfilePictureDialog
+import com.softgames.rentme.presentation.screens.home.house_detail.HostRow
 import com.softgames.rentme.presentation.theme.RentMeTheme
 import com.softgames.rentme.services.AuthService
 
@@ -29,6 +31,7 @@ fun GuestHomeScreen(
 ) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var showUserProfilePictureDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         val userId = AuthService.getCurrentUser()?.uid!!
@@ -46,7 +49,8 @@ fun GuestHomeScreen(
                     viewModel.filterHousesList()
                 },
                 scrollBehavior = scrollBehavior,
-                onSearchPressed = { }
+                onSearchPressed = { },
+                onPhotoClicked = { showUserProfilePictureDialog = true },
             )
         },
         modifier = Modifier
@@ -70,6 +74,14 @@ fun GuestHomeScreen(
             }
 
             item { Spacer(Modifier.height(8.dp)) }
+        }
+
+        if (showUserProfilePictureDialog) {
+            UserProfilePictureDialog(
+                photoUri = viewModel.currentUser.photo,
+                userName = viewModel.currentUser.name,
+                onDismiss = { showUserProfilePictureDialog = false }
+            )
         }
     }
 }

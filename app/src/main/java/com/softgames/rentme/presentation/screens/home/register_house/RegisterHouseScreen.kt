@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class)
 
 package com.softgames.rentme.presentation.screens.home.register_house
 
@@ -27,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.softgames.rentme.domain.model.ScreenState.*
 import com.softgames.rentme.domain.model.toHost
 import com.softgames.rentme.presentation.components.others.MyIcon
+import com.softgames.rentme.presentation.components.shared.MyGoogleMap
 import com.softgames.rentme.presentation.screens.register.composables.PhotoSelectorDialog
 import com.softgames.rentme.presentation.theme.RentMeTheme
 import com.softgames.rentme.presentation.util.CropImage3x2
@@ -47,7 +49,7 @@ fun RegisterHouseScreen(
     val context = LocalContext.current
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    //val imageList = remember { mutableStateListOf<Uri>() }
+    var isMapCameraMoving by remember { mutableStateOf(false) }
 
     var showCameraPermissionDeniedDialog by remember { mutableStateOf(false) }
     var isPhotoDialogPickerVisible by remember { mutableStateOf(false) }
@@ -134,7 +136,7 @@ fun RegisterHouseScreen(
                     )
                 },
                 modifier = Modifier
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
             ) { paddingValues ->
 
                 Column(Modifier
@@ -150,7 +152,7 @@ fun RegisterHouseScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
+                            .verticalScroll(rememberScrollState(), !isMapCameraMoving)
                     ) {
                         Spacer(Modifier.height(24.dp))
 
@@ -228,6 +230,18 @@ fun RegisterHouseScreen(
 
                             Spacer(Modifier.height(8.dp))
 
+                            LocationTitle()
+
+                            MyGoogleMap(
+                                city = viewModel.city,
+                                onPositionChange = {
+                                    viewModel.updateLocation(it)
+                                },
+                                onMapCameraMove = { isMapCameraMoving = it }
+                            )
+
+                            Spacer(Modifier.height(16.dp))
+
                             RegisterButton { viewModel.registerHouse() }
 
                             Spacer(Modifier.height(16.dp))
@@ -272,7 +286,7 @@ fun RegisterHouseScreen(
 
 
 @SuppressLint("RestrictedApi")
-@Preview(showBackground = true, heightDp = 1000)
+@Preview(showBackground = true, heightDp = 1500)
 @Composable
 private fun RegisterHouseScreenPreview() {
     RentMeTheme {

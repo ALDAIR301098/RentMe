@@ -9,9 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -21,8 +19,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.softgames.rentme.domain.model.House
 import com.softgames.rentme.domain.model.toGuest
 import com.softgames.rentme.presentation.components.others.MyIcon
+import com.softgames.rentme.presentation.components.shared.UserProfilePictureDialog
 import com.softgames.rentme.presentation.screens.home.guest_home.HomeAppBar
 import com.softgames.rentme.presentation.screens.home.guest_home.HouseItem
+import com.softgames.rentme.presentation.screens.home.house_detail.HostRow
 import com.softgames.rentme.presentation.theme.RentMeTheme
 import com.softgames.rentme.presentation.util.showMessage
 import com.softgames.rentme.services.AuthService
@@ -34,6 +34,8 @@ fun HostHomeScreen(
     navigateRegisterHouseScreen: (String) -> Unit,
     navigateHouseDetailScreen: (String) -> Unit,
 ) {
+
+    var showUserProfilePictureDialog by remember { mutableStateOf(false) }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val scope = rememberCoroutineScope()
@@ -48,7 +50,8 @@ fun HostHomeScreen(
                     viewModel.filterHousesList()
                 },
                 scrollBehavior = scrollBehavior,
-                onSearchPressed = { }
+                onSearchPressed = { },
+                onPhotoClicked = { showUserProfilePictureDialog = true },
             )
         },
         floatingActionButton = {
@@ -85,6 +88,14 @@ fun HostHomeScreen(
             }
 
             item { Spacer(Modifier.height(8.dp)) }
+        }
+
+        if (showUserProfilePictureDialog) {
+            UserProfilePictureDialog(
+                photoUri = viewModel.user!!.photo,
+                userName = viewModel.user!!.name,
+                onDismiss = { showUserProfilePictureDialog = false }
+            )
         }
 
     }

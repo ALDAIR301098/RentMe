@@ -1,5 +1,6 @@
 package com.softgames.rentme.presentation.screens.home.house_detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.softgames.rentme.R
 import com.softgames.rentme.domain.model.HouseFeature
 import com.softgames.rentme.presentation.components.buttons.MyButton
@@ -76,6 +84,7 @@ fun HouseDetails(
 fun HostRow(
     name: String,
     photo: String?,
+    onPhotoClicked: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -93,7 +102,8 @@ fun HostRow(
             contentDescription = null,
             modifier = Modifier
                 .size(48.dp)
-                .clip(RoundedCornerShape(100)),
+                .clip(RoundedCornerShape(100))
+                .clickable { onPhotoClicked() }
         )
     }
 }
@@ -101,7 +111,7 @@ fun HostRow(
 @Composable
 fun HouseDescriptionTitle() {
     Text(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         text = "Descripción",
         style = MaterialTheme.typography.titleLarge.copy(
             fontWeight = FontWeight.W500
@@ -120,7 +130,7 @@ fun HouseDescription(
 fun HouseFeaturesTitle() {
     Text(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(horizontal = 16.dp),
         text = "Caracteristicas de la casa",
         style = MaterialTheme.typography.titleLarge.copy(
@@ -212,4 +222,19 @@ fun PriceBar(
         }
     }
 }
+
+@Composable
+fun HouseMapTitle() {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        text = "Ubicación",
+        style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.W500
+        )
+    )
+}
+
+
 

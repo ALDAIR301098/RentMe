@@ -2,27 +2,39 @@
 
 package com.softgames.rentme.presentation.screens.home.register_house
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.softgames.rentme.presentation.components.buttons.MyButton
 import com.softgames.rentme.presentation.components.others.MyIcon
 import com.softgames.rentme.presentation.components.textfields.MyOutlinedTextField
+import com.google.maps.android.compose.GoogleMap
+import com.softgames.rentme.presentation.components.others.MyImage
+import com.softgames.rentme.R
 
 @Composable
 fun HouseNameTextField(
@@ -228,5 +240,16 @@ fun RegisterHouseErrorDialog(
         title = { Text("Hubo un error") },
         text = { Text(error) },
         confirmButton = { TextButton(onDissmiss) { Text("Aceptar") } }
+    )
+}
+
+@Composable
+fun LocationTitle() {
+    Text(
+        text = "Ubicación",
+        style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.W500
+        ),
+        modifier = Modifier.fillMaxWidth()
     )
 }

@@ -1,9 +1,12 @@
 package com.softgames.rentme.domain.model
 
 import android.net.Uri
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.GeoPoint
 import com.softgames.rentme.domain.model.RentMeUser.*
+import com.softgames.rentme.util.toLatLng
 
 data class House(
     @get: Exclude var id: String = "",
@@ -21,6 +24,7 @@ data class House(
     var photoList: List<Uri> = emptyList(),
     var rating: Float = 0.0f,
     var timesRated: Int = 0,
+    var location: GeoPoint = GeoPoint(20.64555719345321, -105.21782682675793),
 )
 
 fun DocumentSnapshot.toHouse() =
@@ -40,4 +44,5 @@ fun DocumentSnapshot.toHouse() =
         photoList = get("photoList") as List<Uri>,
         rating = getDouble("rating")!!.toFloat(),
         timesRated = getLong("timesRated")!!.toInt(),
+        location = getGeoPoint("location")?: GeoPoint(20.64555719345321, -105.21782682675793),
     )

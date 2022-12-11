@@ -1,6 +1,7 @@
 package com.softgames.rentme.presentation.screens.home.house_detail
 
-import android.util.Log
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,16 +10,18 @@ import androidx.compose.material.icons.outlined.Bed
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.MeetingRoom
 import androidx.compose.material3.Divider
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.ContextCompat.startActivity
 import com.softgames.rentme.data.repository.HousesRepo
 import com.softgames.rentme.domain.model.HouseFeature
+import com.softgames.rentme.presentation.components.shared.MyGoogleMap
+import com.softgames.rentme.presentation.components.shared.UserProfilePictureDialog
 import com.softgames.rentme.presentation.theme.RentMeTheme
 import kotlinx.coroutines.launch
 
@@ -29,11 +32,13 @@ fun HouseDetailScreen(
 ) {
 
     val scope = rememberCoroutineScope()
+    var isMapCameraMoving by remember { mutableStateOf(false) }
+    var showUserProfilePictureDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         scope.launch {
             val house = HousesRepo.getCurrentHouse(houseId)
-            Log.d("ALDAIR", "House: ${house.name}")
             viewModel.updateHouse(house)
         }
     }
@@ -45,7 +50,7 @@ fun HouseDetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState(), !isMapCameraMoving)
                 .statusBarsPadding()
                 .navigationBarsPadding()
                 .constrainAs(content) {
@@ -76,7 +81,8 @@ fun HouseDetailScreen(
 
                 HostRow(
                     name = viewModel.house!!.hostName,
-                    photo = viewModel.house!!.hostPhoto
+                    photo = viewModel.house!!.hostPhoto,
+                    onPhotoClicked = { showUserProfilePictureDialog = true }
                 )
 
                 Divider(Modifier.fillMaxWidth())
@@ -109,7 +115,31 @@ fun HouseDetailScreen(
                         icon = Icons.Outlined.Groups)
                 ))
 
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Divider(Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            HouseMapTitle()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            MyGoogleMap(
+                location = viewModel.house!!.location,
+                onMapCameraMove = { isMapCameraMoving = it },
+                onNavigateClicked = {
+                    val gmmIntentUri =
+                        Uri.parse("google.navigation:q=${viewModel.house!!.location.latitude},${viewModel.house!!.location.longitude}")
+                    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                    mapIntent.setPackage("com.google.android.apps.maps")
+                    startActivity(context, mapIntent, null)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(64.dp))
 
         }
 
@@ -120,11 +150,19 @@ fun HouseDetailScreen(
             price = viewModel.house!!.price
         )
 
+        if (showUserProfilePictureDialog) {
+            UserProfilePictureDialog(
+                photoUri = viewModel.house!!.hostPhoto,
+                userName = viewModel.house!!.hostName,
+                onDismiss = { showUserProfilePictureDialog = false }
+            )
+        }
+
     }
 
 }
 
-@Preview(showBackground = true, device = Devices.PIXEL_4_XL)
+@Preview(showBackground = true, device = Devices.PIXEL_4_XL, heightDp = 1250)
 @Composable
 private fun HouseDetailScreenPreview() {
     RentMeTheme {

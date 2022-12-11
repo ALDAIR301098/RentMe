@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id("kotlin-parcelize")
     id 'com.google.gms.google-services'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -100,6 +101,10 @@ dependencies {
 
     //SPLASH SCREEN
     implementation 'androidx.core:core-splashscreen:1.0.0'
+
+    //GOOGLE MAPS
+    implementation 'com.google.maps.android:maps-compose:2.7.2'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
 
     //ANDROID BASE COMPOSE
     implementation 'androidx.core:core-ktx:1.9.0'

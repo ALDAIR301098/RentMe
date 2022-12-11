@@ -33,7 +33,7 @@ fun ImagesViewPager(
            Box(
                modifier = Modifier
                    .fillMaxWidth()
-                   .height(275.dp),
+                   .height(305.dp),
                contentAlignment = Alignment.Center
            ) {
 
